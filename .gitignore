@@ -1,0 +1,13 @@
+*
+
+!.gitignore
+
+!Indicators
+Indicators/*
+!Indicators/gambcl
+!Indicators/gambcl/*
+
+!Strategies
+Strategies/*
+!Strategies/gambcl
+!Strategies/gambcl/*
