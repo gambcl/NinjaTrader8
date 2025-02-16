@@ -19,7 +19,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
 			{
 				Description									= @"Volume-Weighted Average Price anchored to session.";
 				Name										= "SessionVWAP";
-				Calculate									= Calculate.OnPriceChange;
+				Calculate									= Calculate.OnBarClose;
 				IsOverlay									= true;
 				DisplayInDataBox							= true;
 				DrawOnPricePanel							= true;
