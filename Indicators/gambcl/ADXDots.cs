@@ -52,7 +52,6 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
 
 		protected override void OnBarUpdate()
 		{
-			//Add your custom indicator logic here.
 			if (CurrentBar < Period)
 				return;
 
