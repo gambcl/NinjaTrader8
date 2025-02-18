@@ -22,42 +22,43 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
 
     [Gui.CategoryOrder("Parameters", 1)]
     [Gui.CategoryOrder("Signals", 2)]
-	public class SignalsMA : Indicator
-	{
+    public class SignalsMA : Indicator
+    {
         #region Members
         private Series<bool> _longEntrySignal;
         private Series<bool> _shortEntrySignal;
         #endregion
-        
-		protected override void OnStateChange()
-		{
-			if (State == State.SetDefaults)
-			{
-				Description									= @"Moving Average that generates signals when price crosses and closes beyond the Moving Average.";
-				Name										= "SignalsMA";
-				Calculate									= Calculate.OnPriceChange;
-				IsOverlay									= true;
-				DisplayInDataBox							= true;
-				DrawOnPricePanel							= true;
-				DrawHorizontalGridLines						= true;
-				DrawVerticalGridLines						= true;
-				PaintPriceMarkers							= true;
-				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
-				//Disable this property if your indicator requires custom values that cumulate with each new market data event. 
-				//See Help Guide for additional information.
-				IsSuspendedWhileInactive					= true;
-				MAType										= MATypeEnum.SMA;
-				Period										= 9;
-				SignalOffset								= 10;
-				UseSignalColors								= true;
-				LongSignalBrush								= Brushes.Green;
-				ShortSignalBrush							= Brushes.Red;
-				SignalPrefix								= "SignalsMA_";
-				AddPlot(Brushes.White, "MovingAverage");
-				AddPlot(Brushes.Transparent, "Signals");
-			}
-			else if (State == State.Configure)
-			{
+
+        #region Indicator methods
+        protected override void OnStateChange()
+        {
+            if (State == State.SetDefaults)
+            {
+                Description									= @"Moving Average that generates signals when price crosses and closes beyond the Moving Average.";
+                Name										= "SignalsMA";
+                Calculate									= Calculate.OnPriceChange;
+                IsOverlay									= true;
+                DisplayInDataBox							= true;
+                DrawOnPricePanel							= true;
+                DrawHorizontalGridLines						= true;
+                DrawVerticalGridLines						= true;
+                PaintPriceMarkers							= true;
+                ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
+                //Disable this property if your indicator requires custom values that cumulate with each new market data event. 
+                //See Help Guide for additional information.
+                IsSuspendedWhileInactive					= true;
+                MAType										= NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum.SMA;
+                Period										= 9;
+                SignalOffset								= 10;
+                UseSignalColors								= true;
+                LongSignalBrush								= Brushes.Green;
+                ShortSignalBrush							= Brushes.Red;
+                SignalPrefix								= "SignalsMA_";
+                AddPlot(Brushes.White, "MovingAverage");
+                AddPlot(Brushes.Transparent, "Signals");
+            }
+            else if (State == State.Configure)
+            {
                 _longEntrySignal = new Series<bool>(this);
                 _shortEntrySignal = new Series<bool>(this);
             }
@@ -68,14 +69,14 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             get { return Name + "(" + MAType + "," + Period + ")"; }
         }
         
-		protected override void OnBarUpdate()
-		{
+        protected override void OnBarUpdate()
+        {
             _longEntrySignal[0] = false;
             _shortEntrySignal[0] = false;
             Signals[0] = 0;
 
-			if (CurrentBar < Period)
-				return;
+            if (CurrentBar < Period)
+                return;
 
             MovingAverage[0] = (MAType == NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum.EMA) ? (EMA(Close, Period)[0]) : (SMA(Close, Period)[0]);
 
@@ -111,60 +112,61 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             }
             else
             {
-				// No signal.
+                // No signal.
                 RemoveDrawObject(longEntrySignalTag);
                 RemoveDrawObject(shortEntrySignalTag);
             }
         }
+        #endregion
 
         #region Properties
         [NinjaScriptProperty]
-		[Display(Name="MA Type", Description="The type of Moving Average.", Order=1, GroupName="Parameters")]
-		public MATypeEnum MAType
-		{ get; set; }
+        [Display(Name="MA Type", Description="The type of Moving Average.", Order=1, GroupName="Parameters")]
+        public NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum MAType
+        { get; set; }
 
-		[NinjaScriptProperty]
-		[Range(1, int.MaxValue)]
-		[Display(Name="Period", Description="The period of the Moving Average.", Order=2, GroupName="Parameters")]
-		public int Period
-		{ get; set; }
+        [NinjaScriptProperty]
+        [Range(1, int.MaxValue)]
+        [Display(Name="Period", Description="The period of the Moving Average.", Order=2, GroupName="Parameters")]
+        public int Period
+        { get; set; }
 
-		[NinjaScriptProperty]
-		[Range(0, int.MaxValue)]
-		[Display(Name="Signal Offset", Description="The vertical offset between signal and bar.", Order=1, GroupName="Signals")]
-		public int SignalOffset
-		{ get; set; }
+        [NinjaScriptProperty]
+        [Range(0, int.MaxValue)]
+        [Display(Name="Signal Offset", Description="The vertical offset between signal and bar.", Order=1, GroupName="Signals")]
+        public int SignalOffset
+        { get; set; }
 
-		[NinjaScriptProperty]
-		[Display(Name="Use Signal Colors", Description="Use specified signal colors.", Order=2, GroupName="Signals")]
-		public bool UseSignalColors
-		{ get; set; }
+        [NinjaScriptProperty]
+        [Display(Name="Use Signal Colors", Description="Use specified signal colors.", Order=2, GroupName="Signals")]
+        public bool UseSignalColors
+        { get; set; }
 
-		[NinjaScriptProperty]
-		[XmlIgnore]
-		[Display(Name="Long Signal Color", Description="Color used for LONG signals.", Order=3, GroupName="Signals")]
-		public Brush LongSignalBrush
-		{ get; set; }
+        [NinjaScriptProperty]
+        [XmlIgnore]
+        [Display(Name="Long Signal Color", Description="Color used for LONG signals.", Order=3, GroupName="Signals")]
+        public Brush LongSignalBrush
+        { get; set; }
 
-		[Browsable(false)]
-		public string BuySignalBrushSerializable
-		{
-			get { return Serialize.BrushToString(LongSignalBrush); }
-			set { LongSignalBrush = Serialize.StringToBrush(value); }
-		}			
+        [Browsable(false)]
+        public string BuySignalBrushSerializable
+        {
+            get { return Serialize.BrushToString(LongSignalBrush); }
+            set { LongSignalBrush = Serialize.StringToBrush(value); }
+        }			
 
-		[NinjaScriptProperty]
-		[XmlIgnore]
-		[Display(Name="Short Signal Color", Description="Color used for SHORT signals.", Order=4, GroupName="Signals")]
-		public Brush ShortSignalBrush
-		{ get; set; }
+        [NinjaScriptProperty]
+        [XmlIgnore]
+        [Display(Name="Short Signal Color", Description="Color used for SHORT signals.", Order=4, GroupName="Signals")]
+        public Brush ShortSignalBrush
+        { get; set; }
 
-		[Browsable(false)]
-		public string SellSignalBrushSerializable
-		{
-			get { return Serialize.BrushToString(ShortSignalBrush); }
-			set { ShortSignalBrush = Serialize.StringToBrush(value); }
-		}
+        [Browsable(false)]
+        public string SellSignalBrushSerializable
+        {
+            get { return Serialize.BrushToString(ShortSignalBrush); }
+            set { ShortSignalBrush = Serialize.StringToBrush(value); }
+        }
 
         [NinjaScriptProperty]
         [Display(Name = "SignalPrefix", Description = "Prefix used when naming signal drawing objects.", Order = 5, GroupName = "Signals")]
@@ -172,18 +174,18 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         { get; set; }
 
         [Browsable(false)]
-		[XmlIgnore]
-		public Series<double> MovingAverage
-		{
-			get { return Values[0]; }
-		}
+        [XmlIgnore]
+        public Series<double> MovingAverage
+        {
+            get { return Values[0]; }
+        }
 
-		[Browsable(false)]
-		[XmlIgnore]
-		public Series<double> Signals
-		{
-			get { return Values[1]; }
-		}
+        [Browsable(false)]
+        [XmlIgnore]
+        public Series<double> Signals
+        {
+            get { return Values[1]; }
+        }
 
         [Browsable(false)]
         [XmlIgnore]
@@ -210,12 +212,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private gambcl.SignalsMA[] cacheSignalsMA;
-		public gambcl.SignalsMA SignalsMA(MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public gambcl.SignalsMA SignalsMA(NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
 		{
 			return SignalsMA(Input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
 		}
 
-		public gambcl.SignalsMA SignalsMA(ISeries<double> input, MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public gambcl.SignalsMA SignalsMA(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
 		{
 			if (cacheSignalsMA != null)
 				for (int idx = 0; idx < cacheSignalsMA.Length; idx++)
@@ -230,12 +232,12 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.gambcl.SignalsMA SignalsMA(MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public Indicators.gambcl.SignalsMA SignalsMA(NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
 		{
 			return indicator.SignalsMA(Input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
 		}
 
-		public Indicators.gambcl.SignalsMA SignalsMA(ISeries<double> input , MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public Indicators.gambcl.SignalsMA SignalsMA(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
 		{
 			return indicator.SignalsMA(input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
 		}
@@ -246,12 +248,12 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.gambcl.SignalsMA SignalsMA(MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public Indicators.gambcl.SignalsMA SignalsMA(NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
 		{
 			return indicator.SignalsMA(Input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
 		}
 
-		public Indicators.gambcl.SignalsMA SignalsMA(ISeries<double> input , MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public Indicators.gambcl.SignalsMA SignalsMA(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
 		{
 			return indicator.SignalsMA(input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
 		}

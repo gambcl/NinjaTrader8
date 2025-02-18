@@ -1,27 +1,11 @@
 #region Using declarations
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml.Serialization;
-using NinjaTrader.Cbi;
 using NinjaTrader.Gui;
-using NinjaTrader.Gui.Chart;
-using NinjaTrader.Gui.SuperDom;
-using NinjaTrader.Gui.Tools;
-using NinjaTrader.Data;
-using NinjaTrader.NinjaScript;
-using NinjaTrader.Core.FloatingPoint;
 using NinjaTrader.NinjaScript.DrawingTools;
-using NinjaTrader.Gui.PropertiesTest;
-using NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums;
-using NinjaTrader.FIX;
 #endregion
 
 //This namespace holds Indicators in this folder and is required. Do not change it. 
@@ -39,8 +23,9 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
     [Gui.CategoryOrder("Parameters", 1)]
     [Gui.CategoryOrder("Display", 2)]
     [Gui.CategoryOrder("Signals", 3)]
+    [Gui.CategoryOrder("Alerts", 4)]
     public class MACloud : Indicator
-	{
+    {
         #region Members
         private int _regionTrend;
         private int _regionStartBar;
@@ -48,44 +33,45 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         private Series<bool> _shortEntrySignal;
         #endregion
 
-		protected override void OnStateChange()
-		{
-			if (State == State.SetDefaults)
-			{
-				Description									= @"Bullish/bearish cloud based on two moving averages.";
-				Name										= "MACloud";
-				Calculate									= Calculate.OnPriceChange;
-				IsOverlay									= true;
-				DisplayInDataBox							= true;
-				DrawOnPricePanel							= true;
-				DrawHorizontalGridLines						= true;
-				DrawVerticalGridLines						= true;
-				PaintPriceMarkers							= true;
-				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
-				//Disable this property if your indicator requires custom values that cumulate with each new market data event. 
-				//See Help Guide for additional information.
-				IsSuspendedWhileInactive					= true;
-				MAType										= MATypeEnum.EMA;
-				FastPeriod									= 9;
-				SlowPeriod									= 21;
-				BullishCloudBrush							= Brushes.Green;
-				BearishCloudBrush							= Brushes.Red;
-				CloudOpacity								= 40;
-				EnableSignals								= false;
+        #region Indicator methods
+        protected override void OnStateChange()
+        {
+            if (State == State.SetDefaults)
+            {
+                Description									= @"Bullish/bearish cloud based on two moving averages.";
+                Name										= "MACloud";
+                Calculate									= Calculate.OnPriceChange;
+                IsOverlay									= true;
+                DisplayInDataBox							= true;
+                DrawOnPricePanel							= true;
+                DrawHorizontalGridLines						= true;
+                DrawVerticalGridLines						= true;
+                PaintPriceMarkers							= false;
+                ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
+                //Disable this property if your indicator requires custom values that cumulate with each new market data event. 
+                //See Help Guide for additional information.
+                IsSuspendedWhileInactive					= true;
+                MAType										= NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum.EMA;
+                FastPeriod									= 9;
+                SlowPeriod									= 21;
+                BullishCloudBrush							= Brushes.Green;
+                BearishCloudBrush							= Brushes.Red;
+                CloudOpacity								= 40;
+                EnableSignals								= false;
                 SignalOffset								= 10;
                 SignalPrefix								= "MACloud_";
-				EnableAlerts								= false;
-				LongEntryAlert								= "Alert2.wav";
+                EnableAlerts								= false;
+                LongEntryAlert								= "Alert2.wav";
                 ShortEntryAlert								= "Alert2.wav";
                 AddPlot(Brushes.Green, "FastMA");
-				AddPlot(Brushes.Red, "SlowMA");
+                AddPlot(Brushes.Red, "SlowMA");
                 AddPlot(Brushes.Transparent, "Signals");
             }
             else if (State == State.Configure)
-			{
-				SetZOrder(-1); // Draw behind price bars.
-				_regionTrend = 0;
-				_regionStartBar = 0;
+            {
+                SetZOrder(-1); // Draw behind price bars.
+                _regionTrend = 0;
+                _regionStartBar = 0;
                 _longEntrySignal = new Series<bool>(this);
                 _shortEntrySignal = new Series<bool>(this);
             }
@@ -97,51 +83,51 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         }
 
         protected override void OnBarUpdate()
-		{
+        {
             _longEntrySignal[0] = false;
             _shortEntrySignal[0] = false;
             Signals[0] = 0;
 
             if (CurrentBar < Math.Max(FastPeriod, SlowPeriod))
-				return;
+                return;
 
             FastMA[0] = (MAType == NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum.EMA) ? (EMA(Close, FastPeriod)[0]) : (SMA(Close, FastPeriod)[0]);
             SlowMA[0] = (MAType == NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum.EMA) ? (EMA(Close, SlowPeriod)[0]) : (SMA(Close, SlowPeriod)[0]);
 
-			int currTrend = (FastMA[0] > SlowMA[0]) ? 1 : ((FastMA[0] < SlowMA[0]) ? -1 : 0);
+            int currTrend = (FastMA[0] > SlowMA[0]) ? 1 : ((FastMA[0] < SlowMA[0]) ? -1 : 0);
             int prevTrend = (FastMA[1] > SlowMA[1]) ? 1 : ((FastMA[1] < SlowMA[1]) ? -1 : 0);
 
             if (currTrend != 0)
-			{
-				if (currTrend != _regionTrend)
-				{
-					// New cloud region starting.
-					_regionStartBar = CurrentBar - 1; // Extend back 1 bar to fill gap at start of cloud region.
+            {
+                if (currTrend != _regionTrend)
+                {
+                    // New cloud region starting.
+                    _regionStartBar = CurrentBar - 1; // Extend back 1 bar to fill gap at start of cloud region.
                     _regionTrend = currTrend;
                 }
 
                 Brush areaBrush = currTrend > 0 ? BullishCloudBrush : (currTrend < 0 ? BearishCloudBrush : Brushes.Transparent);
                 string regionTag = string.Format("MACloud_{0}Cloud{1}", (_regionTrend > 0 ? "Bullish" : "Bearish"), _regionStartBar);
-				int startBarsAgo = CurrentBar - _regionStartBar;
+                int startBarsAgo = CurrentBar - _regionStartBar;
 
                 Draw.Region(this, regionTag, startBarsAgo, 0, FastMA, SlowMA, Brushes.Transparent, areaBrush, CloudOpacity);
             }
             else
-			{
-				// MAs must be exactly overlapping, close current region.
-				_regionTrend = 0;
-				_regionStartBar = 0;
-			}
+            {
+                // MAs must be exactly overlapping, close current region.
+                _regionTrend = 0;
+                _regionStartBar = 0;
+            }
 
-			// Signals
-			if (EnableSignals)
-			{
+            // Signals
+            if (EnableSignals)
+            {
                 var barTime = Time[0];
                 string longEntrySignalTag = string.Format("{0}LongEntry{1}", SignalPrefix, CurrentBar);
                 string shortEntrySignalTag = string.Format("{0}ShortEntry{1}", SignalPrefix, CurrentBar);
                 
-				if (FastMA[0] >= SlowMA[0] && FastMA[1] < SlowMA[1])
-				{
+                if (FastMA[0] >= SlowMA[0] && FastMA[1] < SlowMA[1])
+                {
                     // LONG entry signal.
                     RemoveDrawObject(shortEntrySignalTag);
                     _longEntrySignal[0] = true;
@@ -153,8 +139,8 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                         Math.Min(Math.Min(FastMA[0], SlowMA[0]), Low[0]) - (SignalOffset * TickSize),
                         BullishCloudBrush);
                 }
-				else if (FastMA[0] <= SlowMA[0] && FastMA[1] > SlowMA[1])
-				{
+                else if (FastMA[0] <= SlowMA[0] && FastMA[1] > SlowMA[1])
+                {
                     // SHORT entry signal.
                     RemoveDrawObject(longEntrySignalTag);
                     _shortEntrySignal[0] = true;
@@ -167,19 +153,19 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                         BearishCloudBrush);
                 }
                 else
-				{
+                {
                     // No signal.
                     RemoveDrawObject(longEntrySignalTag);
                     RemoveDrawObject(shortEntrySignalTag);
                 }
 
-				// Alerts
-				if (EnableAlerts && EnableSignals && (State == State.Realtime) && IsFirstTickOfBar)
-				{
-					if (Signals[1] > 0 && !string.IsNullOrWhiteSpace(LongEntryAlert))
-					{
-						// Long entry alert.
-						string audioFile = LongEntryAlert.Contains(@"\") ? LongEntryAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + LongEntryAlert);
+                // Alerts
+                if (EnableAlerts && EnableSignals && (State == State.Realtime) && IsFirstTickOfBar)
+                {
+                    if (Signals[1] > 0 && !string.IsNullOrWhiteSpace(LongEntryAlert))
+                    {
+                        // Long entry alert.
+                        string audioFile = LongEntryAlert.Contains(@"\") ? LongEntryAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + LongEntryAlert);
                         Alert("LongEntryAlert", Priority.High, "Long Entry - Bullish cross", audioFile, 10, Brushes.Black, BullishCloudBrush);
                     }
                     if (Signals[1] < 0 && !string.IsNullOrWhiteSpace(ShortEntryAlert))
@@ -191,50 +177,51 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 }
             }
         }
+        #endregion
 
         #region Properties
         [NinjaScriptProperty]
         [Display(Name = "MA Type", Description = "The type of Moving Average.", Order = 1, GroupName = "Parameters")]
-        public MATypeEnum MAType
+        public NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum MAType
         { get; set; }
 
         [NinjaScriptProperty]
-		[Range(1, int.MaxValue)]
-		[Display(Name="FastPeriod", Description="The period of the fast Moving Average.", Order=2, GroupName="Parameters")]
-		public int FastPeriod
-		{ get; set; }
+        [Range(1, int.MaxValue)]
+        [Display(Name="FastPeriod", Description="The period of the fast Moving Average.", Order=2, GroupName="Parameters")]
+        public int FastPeriod
+        { get; set; }
 
-		[NinjaScriptProperty]
-		[Range(1, int.MaxValue)]
-		[Display(Name="SlowPeriod", Description="The period of the slow Moving Average.", Order=3, GroupName="Parameters")]
-		public int SlowPeriod
-		{ get; set; }
+        [NinjaScriptProperty]
+        [Range(1, int.MaxValue)]
+        [Display(Name="SlowPeriod", Description="The period of the slow Moving Average.", Order=3, GroupName="Parameters")]
+        public int SlowPeriod
+        { get; set; }
 
-		[NinjaScriptProperty]
-		[XmlIgnore]
-		[Display(Name="Bullish Cloud Color", Description="Color used for the bullish cloud.", Order=1, GroupName="Display")]
-		public Brush BullishCloudBrush
-		{ get; set; }
+        [NinjaScriptProperty]
+        [XmlIgnore]
+        [Display(Name="Bullish Cloud Color", Description="Color used for the bullish cloud.", Order=1, GroupName="Display")]
+        public Brush BullishCloudBrush
+        { get; set; }
 
-		[Browsable(false)]
-		public string BullishCloudBrushSerializable
-		{
-			get { return Serialize.BrushToString(BullishCloudBrush); }
-			set { BullishCloudBrush = Serialize.StringToBrush(value); }
-		}			
+        [Browsable(false)]
+        public string BullishCloudBrushSerializable
+        {
+            get { return Serialize.BrushToString(BullishCloudBrush); }
+            set { BullishCloudBrush = Serialize.StringToBrush(value); }
+        }			
 
-		[NinjaScriptProperty]
-		[XmlIgnore]
-		[Display(Name="Bearish Cloud Color", Description="Color used for the bearish cloud.", Order=2, GroupName= "Display")]
-		public Brush BearishCloudBrush
-		{ get; set; }
+        [NinjaScriptProperty]
+        [XmlIgnore]
+        [Display(Name="Bearish Cloud Color", Description="Color used for the bearish cloud.", Order=2, GroupName= "Display")]
+        public Brush BearishCloudBrush
+        { get; set; }
 
-		[Browsable(false)]
-		public string BearishCloudBrushSerializable
-		{
-			get { return Serialize.BrushToString(BearishCloudBrush); }
-			set { BearishCloudBrush = Serialize.StringToBrush(value); }
-		}
+        [Browsable(false)]
+        public string BearishCloudBrushSerializable
+        {
+            get { return Serialize.BrushToString(BearishCloudBrush); }
+            set { BearishCloudBrush = Serialize.StringToBrush(value); }
+        }
 
         [NinjaScriptProperty]
         [Range(0, int.MaxValue)]
@@ -274,18 +261,18 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         { get; set; }
 
         [Browsable(false)]
-		[XmlIgnore]
-		public Series<double> FastMA
-		{
-			get { return Values[0]; }
-		}
+        [XmlIgnore]
+        public Series<double> FastMA
+        {
+            get { return Values[0]; }
+        }
 
-		[Browsable(false)]
-		[XmlIgnore]
-		public Series<double> SlowMA
-		{
-			get { return Values[1]; }
-		}
+        [Browsable(false)]
+        [XmlIgnore]
+        public Series<double> SlowMA
+        {
+            get { return Values[1]; }
+        }
 
         [Browsable(false)]
         [XmlIgnore]
@@ -305,12 +292,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private gambcl.MACloud[] cacheMACloud;
-		public gambcl.MACloud MACloud(MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public gambcl.MACloud MACloud(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
 		{
 			return MACloud(Input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, enableSignals, signalOffset, signalPrefix, enableAlerts, longEntryAlert, shortEntryAlert);
 		}
 
-		public gambcl.MACloud MACloud(ISeries<double> input, MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public gambcl.MACloud MACloud(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
 		{
 			if (cacheMACloud != null)
 				for (int idx = 0; idx < cacheMACloud.Length; idx++)
@@ -325,12 +312,12 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.gambcl.MACloud MACloud(MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public Indicators.gambcl.MACloud MACloud(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
 		{
 			return indicator.MACloud(Input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, enableSignals, signalOffset, signalPrefix, enableAlerts, longEntryAlert, shortEntryAlert);
 		}
 
-		public Indicators.gambcl.MACloud MACloud(ISeries<double> input , MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public Indicators.gambcl.MACloud MACloud(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
 		{
 			return indicator.MACloud(input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, enableSignals, signalOffset, signalPrefix, enableAlerts, longEntryAlert, shortEntryAlert);
 		}
@@ -341,12 +328,12 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.gambcl.MACloud MACloud(MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public Indicators.gambcl.MACloud MACloud(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
 		{
 			return indicator.MACloud(Input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, enableSignals, signalOffset, signalPrefix, enableAlerts, longEntryAlert, shortEntryAlert);
 		}
 
-		public Indicators.gambcl.MACloud MACloud(ISeries<double> input , MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public Indicators.gambcl.MACloud MACloud(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, bool enableSignals, int signalOffset, string signalPrefix, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
 		{
 			return indicator.MACloud(input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, enableSignals, signalOffset, signalPrefix, enableAlerts, longEntryAlert, shortEntryAlert);
 		}

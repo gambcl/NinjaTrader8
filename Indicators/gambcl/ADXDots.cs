@@ -12,55 +12,63 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
     [Gui.CategoryOrder("Parameters", 1)]
     [Gui.CategoryOrder("Display", 2)]
     public class ADXDots : Indicator
-	{
-		private ADX _adx;
+    {
+        #region Members
+        private ADX _adx;
+        #endregion
 
-		protected override void OnStateChange()
-		{
-			if (State == State.SetDefaults)
-			{
-				Description									= @"Row of colored dots indicating ADX strength.";
-				Name										= "ADXDots";
-				Calculate									= Calculate.OnPriceChange;
-				IsOverlay									= false;
-				DisplayInDataBox							= false;
-				DrawOnPricePanel							= true;
-				DrawHorizontalGridLines						= true;
-				DrawVerticalGridLines						= true;
-				PaintPriceMarkers							= true;
-				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
-				//Disable this property if your indicator requires custom values that cumulate with each new market data event. 
-				//See Help Guide for additional information.
-				IsSuspendedWhileInactive					= true;
-				Period										= 14;
-				DisplayLevel								= 50;
-				MediumTrendThreshold						= 15;
-				StrongTrendThreshold						= 23;
-				WeakTrendColor = new SolidColorBrush(Color.FromRgb(225, 190, 231));
-				WeakTrendColor.Freeze();
+        #region Indicator methods
+        protected override void OnStateChange()
+        {
+            if (State == State.SetDefaults)
+            {
+                Description									= @"Row of colored dots indicating ADX strength.";
+                Name										= "ADXDots";
+                Calculate									= Calculate.OnPriceChange;
+                IsOverlay									= false;
+                DisplayInDataBox							= false;
+                DrawOnPricePanel							= false;
+                DrawHorizontalGridLines						= true;
+                DrawVerticalGridLines						= true;
+                PaintPriceMarkers							= false;
+                ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
+                //Disable this property if your indicator requires custom values that cumulate with each new market data event. 
+                //See Help Guide for additional information.
+                IsSuspendedWhileInactive					= true;
+                Period										= 14;
+                DisplayLevel								= 50;
+                MediumTrendThreshold						= 15;
+                StrongTrendThreshold						= 23;
+                WeakTrendColor = new SolidColorBrush(Color.FromRgb(225, 190, 231));
+                WeakTrendColor.Freeze();
                 MediumTrendColor = new SolidColorBrush(Color.FromRgb(186, 104, 200));
                 MediumTrendColor.Freeze();
                 StrongTrendColor = new SolidColorBrush(Color.FromRgb(123, 31, 162));
                 StrongTrendColor.Freeze();
-				AddPlot(new Stroke(Brushes.White, 8), PlotStyle.Dot, "Dots");
-			}
-			else if (State == State.Configure)
-			{
+                AddPlot(new Stroke(Brushes.White, 6), PlotStyle.Dot, "Dots");
+            }
+            else if (State == State.Configure)
+            {
                 _adx = ADX(Period);
-			}
-		}
+            }
+        }
 
-		protected override void OnBarUpdate()
-		{
-			if (CurrentBar < Period)
-				return;
+        public override string DisplayName
+        {
+            get { return Name + "(" + Period + "," + MediumTrendThreshold + ","  + StrongTrendThreshold + ")"; }
+        }
 
-			var adx = _adx[0];
+        protected override void OnBarUpdate()
+        {
+            if (CurrentBar < Period)
+                return;
 
-			Dots[0] = DisplayLevel;
+            var adx = _adx[0];
 
-			if (adx >= StrongTrendThreshold)
-			{
+            Dots[0] = DisplayLevel;
+
+            if (adx >= StrongTrendThreshold)
+            {
                 PlotBrushes[0][0] = StrongTrendColor;
             }
             else if (adx >= MediumTrendThreshold)
@@ -72,38 +80,39 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 PlotBrushes[0][0] = WeakTrendColor;
             }
         }
+        #endregion
 
         #region Properties
         [NinjaScriptProperty]
-		[Range(1, int.MaxValue)]
-		[Display(Name="Period", Description="Number of bars used in the calculation", Order=1, GroupName="Parameters")]
-		public int Period
-		{ get; set; }
+        [Range(1, int.MaxValue)]
+        [Display(Name="Period", Description="Number of bars used in the calculation.", Order=1, GroupName="Parameters")]
+        public int Period
+        { get; set; }
 
-		[NinjaScriptProperty]
-		[Range(0, int.MaxValue)]
-		[Display(Name="DisplayLevel", Description="Value level at which the row of dots will be displayed", Order=1, GroupName="Display")]
-		public int DisplayLevel
-		{ get; set; }
+        [NinjaScriptProperty]
+        [Range(0, int.MaxValue)]
+        [Display(Name="DisplayLevel", Description="Value level at which the row of dots will be displayed.", Order=1, GroupName="Display")]
+        public int DisplayLevel
+        { get; set; }
 
         [NinjaScriptProperty]
         [Range(0, double.MaxValue)]
-        [Display(Name = "MediumTrendThreshold", Description = "Minimum ADX value to be considered a medium trend", Order = 2, GroupName = "Display")]
+        [Display(Name = "MediumTrendThreshold", Description = "Minimum ADX value to be considered a medium trend.", Order = 2, GroupName = "Display")]
         public double MediumTrendThreshold
         { get; set; }
 
         [NinjaScriptProperty]
         [Range(0, double.MaxValue)]
-        [Display(Name = "StrongTrendThreshold", Description = "Minimum ADX value to be considered a strong trend", Order = 3, GroupName = "Display")]
+        [Display(Name = "StrongTrendThreshold", Description = "Minimum ADX value to be considered a strong trend.", Order = 3, GroupName = "Display")]
         public double StrongTrendThreshold
         { get; set; }
 
         [XmlIgnore]
-        [Display(Name = "WeakTrendColor", Description = "Dot color used to indicate a weak trend", Order = 4, GroupName = "Display")]
+        [Display(Name = "WeakTrendColor", Description = "Dot color used to indicate a weak trend.", Order = 4, GroupName = "Display")]
         public Brush WeakTrendColor
         { get; set; }
         
-		[Browsable(false)]
+        [Browsable(false)]
         public string WeakTrendColorSerialize
         {
             get { return Serialize.BrushToString(WeakTrendColor); }
@@ -111,7 +120,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         }
 
         [XmlIgnore]
-        [Display(Name = "MediumTrendColor", Description = "Dot color used to indicate a medium trend", Order = 5, GroupName = "Display")]
+        [Display(Name = "MediumTrendColor", Description = "Dot color used to indicate a medium trend.", Order = 5, GroupName = "Display")]
         public Brush MediumTrendColor
         { get; set; }
 
@@ -123,7 +132,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         }
 
         [XmlIgnore]
-        [Display(Name = "StrongTrendColor", Description = "Dot color used to indicate a strong trend", Order = 6, GroupName = "Display")]
+        [Display(Name = "StrongTrendColor", Description = "Dot color used to indicate a strong trend.", Order = 6, GroupName = "Display")]
         public Brush StrongTrendColor
         { get; set; }
 
@@ -134,15 +143,15 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             set { StrongTrendColor = Serialize.StringToBrush(value); }
         }
 
-		[Browsable(false)]
-		[XmlIgnore]
-		public Series<double> Dots
-		{
-			get { return Values[0]; }
-		}
-		#endregion
+        [Browsable(false)]
+        [XmlIgnore]
+        public Series<double> Dots
+        {
+            get { return Values[0]; }
+        }
+        #endregion
 
-	}
+    }
 }
 
 #region NinjaScript generated code. Neither change nor remove.
