@@ -224,7 +224,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         }
 
         [NinjaScriptProperty]
-        [Range(0, int.MaxValue)]
+        [Range(0, 100)]
         [Display(Name = "Cloud Opacity", Description = "The opacity of the cloud (0 = completely transparent, 100 = no opacity).", Order = 3, GroupName = "Display")]
         public int CloudOpacity
         { get; set; }
@@ -281,7 +281,6 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             get { return Values[2]; }
         }
         #endregion
-
     }
 }
 
