@@ -113,27 +113,14 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 return;
 
             // Signals
-            if (EnableLongEntrySignals && (LRSI[1] <= OversoldLevel) && (LRSI[0] > OversoldLevel))
-            {
-                LongEntrySignal[0] = true;
+            LongEntrySignal[0] = EnableLongEntrySignals && (LRSI[1] <= OversoldLevel) && (LRSI[0] > OversoldLevel);
+            ShortEntrySignal[0] = EnableShortEntrySignals && (LRSI[1] >= OverboughtLevel) && (LRSI[0] < OverboughtLevel);
+            if (LongEntrySignal[0])
                 BackBrush = _longEntrySignalBrush;
-            }
-            else
-            {
-                LongEntrySignal[0] = false;
-                BackBrush = Brushes.Transparent;
-            }
-
-            if (EnableShortEntrySignals && (LRSI[1] >= OverboughtLevel) && (LRSI[0] < OverboughtLevel))
-            {
-                ShortEntrySignal[0] = true;
+            else if (ShortEntrySignal[0])
                 BackBrush = _shortEntrySignalBrush;
-            }
             else
-            {
-                ShortEntrySignal[0] = false;
                 BackBrush = Brushes.Transparent;
-            }
 
             // Alerts
             if (EnableAlerts && (State == State.Realtime) && IsFirstTickOfBar)
