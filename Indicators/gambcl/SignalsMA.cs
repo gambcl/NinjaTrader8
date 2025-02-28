@@ -149,7 +149,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         { get; set; }
 
         [Browsable(false)]
-        public string BuySignalBrushSerializable
+        public string LongSignalBrushSerializable
         {
             get { return Serialize.BrushToString(LongSignalBrush); }
             set { LongSignalBrush = Serialize.StringToBrush(value); }
@@ -162,7 +162,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         { get; set; }
 
         [Browsable(false)]
-        public string SellSignalBrushSerializable
+        public string ShortSignalBrushSerializable
         {
             get { return Serialize.BrushToString(ShortSignalBrush); }
             set { ShortSignalBrush = Serialize.StringToBrush(value); }

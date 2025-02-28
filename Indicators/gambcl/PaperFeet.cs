@@ -25,7 +25,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         private SharpDX.Direct2D1.Brush _oversoldBrushDx;
         private Brush _longEntrySignalBrush;
         private Brush _shortEntrySignalBrush;
-        private bool isRsiInitialized;
+        private bool _isRsiInitialized;
         private Series<bool> _longEntrySignal;
         private Series<bool> _shortEntrySignal;
         #endregion
@@ -67,12 +67,12 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 LongEntryAlert                              = "Alert2.wav";
                 ShortEntryAlert                             = "Alert2.wav";
                 AddPlot(new Stroke(Brushes.White, 2), PlotStyle.Line, "LRSI");
-                isRsiInitialized = false;
+                _isRsiInitialized = false;
             }
             else if (State == State.Configure)
 			{
                 _lrsi = LaguerreRSI(UseFractalEnergy, Alpha, NFE, GLength, BetaDev, OverboughtLevel, OversoldLevel, OverboughtRegionBrush, OversoldRegionBrush, RegionOpacity, false, string.Empty, string.Empty, string.Empty, string.Empty);
-                isRsiInitialized = false;
+                _isRsiInitialized = false;
 
                 _longEntrySignalBrush = LongEntrySignalBrush.CloneCurrentValue();
                 _longEntrySignalBrush.Opacity = SignalsOpacity / 100.0;
@@ -106,10 +106,10 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             _lrsi.Update();
             LRSI[0] = _lrsi.LRSI[0];
 
-            if (!isRsiInitialized && LRSI[1] != 0.0)
-                isRsiInitialized = true;
+            if (!_isRsiInitialized && LRSI[1] != 0.0)
+                _isRsiInitialized = true;
 
-            if (!isRsiInitialized)
+            if (!_isRsiInitialized)
                 return;
 
             // Signals
