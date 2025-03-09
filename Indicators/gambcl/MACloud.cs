@@ -63,8 +63,8 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 EnableAlerts								= false;
                 LongEntryAlert								= "Alert2.wav";
                 ShortEntryAlert								= "Alert2.wav";
-                AddPlot(Brushes.Green, "FastMA");
-                AddPlot(Brushes.Red, "SlowMA");
+                AddPlot(new Stroke(Brushes.Green, 1), PlotStyle.PriceBox, "FastMA");
+                AddPlot(new Stroke(Brushes.Red, 1), PlotStyle.PriceBox, "SlowMA");
                 AddPlot(Brushes.Transparent, "Signals");
             }
             else if (State == State.Configure)
@@ -94,30 +94,10 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             FastMA[0] = (MAType == NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum.EMA) ? (EMA(Close, FastPeriod)[0]) : (SMA(Close, FastPeriod)[0]);
             SlowMA[0] = (MAType == NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum.EMA) ? (EMA(Close, SlowPeriod)[0]) : (SMA(Close, SlowPeriod)[0]);
 
-            int currTrend = (FastMA[0] > SlowMA[0]) ? 1 : ((FastMA[0] < SlowMA[0]) ? -1 : 0);
-            int prevTrend = (FastMA[1] > SlowMA[1]) ? 1 : ((FastMA[1] < SlowMA[1]) ? -1 : 0);
+            if (!IsVisible)
+                return;
 
-            if (currTrend != 0)
-            {
-                if (currTrend != _regionTrend)
-                {
-                    // New cloud region starting.
-                    _regionStartBar = CurrentBar - 1; // Extend back 1 bar to fill gap at start of cloud region.
-                    _regionTrend = currTrend;
-                }
-
-                Brush areaBrush = currTrend > 0 ? BullishCloudBrush : (currTrend < 0 ? BearishCloudBrush : Brushes.Transparent);
-                string regionTag = string.Format("MACloud_{0}Cloud{1}", (_regionTrend > 0 ? "Bullish" : "Bearish"), _regionStartBar);
-                int startBarsAgo = CurrentBar - _regionStartBar;
-
-                Draw.Region(this, regionTag, startBarsAgo, 0, FastMA, SlowMA, Brushes.Transparent, areaBrush, CloudOpacity);
-            }
-            else
-            {
-                // MAs must be exactly overlapping, close current region.
-                _regionTrend = 0;
-                _regionStartBar = 0;
-            }
+            DrawCloud(this, "MACloud_");
 
             // Signals
             if (EnableSignals)
@@ -125,7 +105,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 var barTime = Time[0];
                 string longEntrySignalTag = string.Format("{0}LongEntry{1}", SignalPrefix, CurrentBar);
                 string shortEntrySignalTag = string.Format("{0}ShortEntry{1}", SignalPrefix, CurrentBar);
-                
+
                 if (FastMA[0] >= SlowMA[0] && FastMA[1] < SlowMA[1])
                 {
                     // LONG entry signal.
@@ -175,6 +155,36 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                         Alert("ShortEntryAlert", Priority.High, "Short Entry - Bearish cross", audioFile, 10, Brushes.Black, BearishCloudBrush);
                     }
                 }
+            }
+        }
+        #endregion
+
+        #region Public methods
+        public void DrawCloud(NinjaScriptBase owner, string drawingObjectPrefix)
+        {
+            int currTrend = (FastMA[0] > SlowMA[0]) ? 1 : ((FastMA[0] < SlowMA[0]) ? -1 : 0);
+            int prevTrend = (FastMA[1] > SlowMA[1]) ? 1 : ((FastMA[1] < SlowMA[1]) ? -1 : 0);
+
+            if (currTrend != 0)
+            {
+                if (currTrend != _regionTrend)
+                {
+                    // New cloud region starting.
+                    _regionStartBar = CurrentBar - 1; // Extend back 1 bar to fill gap at start of cloud region.
+                    _regionTrend = currTrend;
+                }
+
+                Brush areaBrush = currTrend > 0 ? BullishCloudBrush : (currTrend < 0 ? BearishCloudBrush : Brushes.Transparent);
+                string regionTag = string.Format("{0}{1}Cloud{2}", drawingObjectPrefix, (_regionTrend > 0 ? "Bullish" : "Bearish"), _regionStartBar);
+                int startBarsAgo = CurrentBar - _regionStartBar;
+
+                Draw.Region(owner, regionTag, startBarsAgo, 0, FastMA, SlowMA, Brushes.Transparent, areaBrush, CloudOpacity);
+            }
+            else
+            {
+                // MAs must be exactly overlapping, close current region.
+                _regionTrend = 0;
+                _regionStartBar = 0;
             }
         }
         #endregion
