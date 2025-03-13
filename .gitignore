@@ -11,3 +11,6 @@ Indicators/*
 Strategies/*
 !Strategies/gambcl
 !Strategies/gambcl/*
+
+!Templates
+!Templates/*
