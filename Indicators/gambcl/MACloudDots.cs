@@ -2,9 +2,11 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using NinjaTrader.Gui;
+using NinjaTrader.NinjaScript.DrawingTools;
 #endregion
 
 //This namespace holds Indicators in this folder and is required. Do not change it. 
@@ -35,13 +37,14 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
                 //Disable this property if your indicator requires custom values that cumulate with each new market data event. 
                 //See Help Guide for additional information.
-                IsSuspendedWhileInactive = true;
-                MAType = NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum.EMA;
-                FastPeriod = 9;
-                SlowPeriod = 21;
-                DisplayLevel = 50;
-                BullishTrendBrush = Brushes.Green;
-                BearishTrendBrush = Brushes.Red;
+                IsSuspendedWhileInactive                    = true;
+                MAType                                      = NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum.EMA;
+                FastPeriod                                  = 9;
+                SlowPeriod                                  = 21;
+                DisplayLevel                                = 50;
+                BullishTrendBrush                           = Brushes.Green;
+                BearishTrendBrush                           = Brushes.Red;
+                ShowLabel                                   = true;
                 AddPlot(new Stroke(Brushes.Transparent, 6), PlotStyle.Dot, "Dots");
             }
             else if (State == State.Configure)
@@ -77,6 +80,11 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             else
             {
                 PlotBrushes[0][0] = Brushes.Transparent;
+            }
+
+            if (ShowLabel)
+            {
+                Draw.Text(this, Name + "Label", false, MAType + " Cloud", -1, DisplayLevel, 0, Brushes.LightGray, ChartControl.Properties.LabelFont, TextAlignment.Left, Brushes.Transparent, Brushes.Transparent, 0);
             }
         }
         #endregion
@@ -131,6 +139,11 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             set { BearishTrendBrush = Serialize.StringToBrush(value); }
         }
 
+        [NinjaScriptProperty]
+        [Display(Name = "ShowLabel", Description = "Display label next to row of dots.", Order = 4, GroupName = "Display")]
+        public bool ShowLabel
+        { get; set; }
+
         [Browsable(false)]
         [XmlIgnore]
         public Series<double> Dots
@@ -148,18 +161,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private gambcl.MACloudDots[] cacheMACloudDots;
-		public gambcl.MACloudDots MACloudDots(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush)
+		public gambcl.MACloudDots MACloudDots(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush, bool showLabel)
 		{
-			return MACloudDots(Input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush);
+			return MACloudDots(Input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush, showLabel);
 		}
 
-		public gambcl.MACloudDots MACloudDots(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush)
+		public gambcl.MACloudDots MACloudDots(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush, bool showLabel)
 		{
 			if (cacheMACloudDots != null)
 				for (int idx = 0; idx < cacheMACloudDots.Length; idx++)
-					if (cacheMACloudDots[idx] != null && cacheMACloudDots[idx].MAType == mAType && cacheMACloudDots[idx].FastPeriod == fastPeriod && cacheMACloudDots[idx].SlowPeriod == slowPeriod && cacheMACloudDots[idx].DisplayLevel == displayLevel && cacheMACloudDots[idx].BullishTrendBrush == bullishTrendBrush && cacheMACloudDots[idx].BearishTrendBrush == bearishTrendBrush && cacheMACloudDots[idx].EqualsInput(input))
+					if (cacheMACloudDots[idx] != null && cacheMACloudDots[idx].MAType == mAType && cacheMACloudDots[idx].FastPeriod == fastPeriod && cacheMACloudDots[idx].SlowPeriod == slowPeriod && cacheMACloudDots[idx].DisplayLevel == displayLevel && cacheMACloudDots[idx].BullishTrendBrush == bullishTrendBrush && cacheMACloudDots[idx].BearishTrendBrush == bearishTrendBrush && cacheMACloudDots[idx].ShowLabel == showLabel && cacheMACloudDots[idx].EqualsInput(input))
 						return cacheMACloudDots[idx];
-			return CacheIndicator<gambcl.MACloudDots>(new gambcl.MACloudDots(){ MAType = mAType, FastPeriod = fastPeriod, SlowPeriod = slowPeriod, DisplayLevel = displayLevel, BullishTrendBrush = bullishTrendBrush, BearishTrendBrush = bearishTrendBrush }, input, ref cacheMACloudDots);
+			return CacheIndicator<gambcl.MACloudDots>(new gambcl.MACloudDots(){ MAType = mAType, FastPeriod = fastPeriod, SlowPeriod = slowPeriod, DisplayLevel = displayLevel, BullishTrendBrush = bullishTrendBrush, BearishTrendBrush = bearishTrendBrush, ShowLabel = showLabel }, input, ref cacheMACloudDots);
 		}
 	}
 }
@@ -168,14 +181,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.gambcl.MACloudDots MACloudDots(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush)
+		public Indicators.gambcl.MACloudDots MACloudDots(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush, bool showLabel)
 		{
-			return indicator.MACloudDots(Input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush);
+			return indicator.MACloudDots(Input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush, showLabel);
 		}
 
-		public Indicators.gambcl.MACloudDots MACloudDots(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush)
+		public Indicators.gambcl.MACloudDots MACloudDots(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush, bool showLabel)
 		{
-			return indicator.MACloudDots(input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush);
+			return indicator.MACloudDots(input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush, showLabel);
 		}
 	}
 }
@@ -184,14 +197,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.gambcl.MACloudDots MACloudDots(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush)
+		public Indicators.gambcl.MACloudDots MACloudDots(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush, bool showLabel)
 		{
-			return indicator.MACloudDots(Input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush);
+			return indicator.MACloudDots(Input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush, showLabel);
 		}
 
-		public Indicators.gambcl.MACloudDots MACloudDots(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush)
+		public Indicators.gambcl.MACloudDots MACloudDots(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, int displayLevel, Brush bullishTrendBrush, Brush bearishTrendBrush, bool showLabel)
 		{
-			return indicator.MACloudDots(input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush);
+			return indicator.MACloudDots(input, mAType, fastPeriod, slowPeriod, displayLevel, bullishTrendBrush, bearishTrendBrush, showLabel);
 		}
 	}
 }

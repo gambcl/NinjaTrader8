@@ -1,9 +1,11 @@
 #region Using declarations
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using NinjaTrader.Gui;
+using NinjaTrader.NinjaScript.DrawingTools;
 #endregion
 
 //This namespace holds Indicators in this folder and is required. Do not change it. 
@@ -39,11 +41,12 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 DisplayLevel								= 50;
                 MediumTrendThreshold						= 15;
                 StrongTrendThreshold						= 23;
-                WeakTrendColor = new SolidColorBrush(Color.FromRgb(225, 190, 231));
+                WeakTrendColor                              = new SolidColorBrush(Color.FromRgb(225, 190, 231));
+                MediumTrendColor                            = new SolidColorBrush(Color.FromRgb(186, 104, 200));
+                StrongTrendColor                            = new SolidColorBrush(Color.FromRgb(123, 31, 162));
+                ShowLabel                                   = true;
                 WeakTrendColor.Freeze();
-                MediumTrendColor = new SolidColorBrush(Color.FromRgb(186, 104, 200));
                 MediumTrendColor.Freeze();
-                StrongTrendColor = new SolidColorBrush(Color.FromRgb(123, 31, 162));
                 StrongTrendColor.Freeze();
                 AddPlot(new Stroke(Brushes.White, 6), PlotStyle.Dot, "Dots");
             }
@@ -78,6 +81,11 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             else
             {
                 PlotBrushes[0][0] = WeakTrendColor;
+            }
+
+            if (ShowLabel)
+            {
+                Draw.Text(this, Name + "Label", false, "ADX", -1, DisplayLevel, 0, Brushes.LightGray, ChartControl.Properties.LabelFont, TextAlignment.Left, Brushes.Transparent, Brushes.Transparent, 0);
             }
         }
         #endregion
@@ -143,6 +151,11 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             set { StrongTrendColor = Serialize.StringToBrush(value); }
         }
 
+        [NinjaScriptProperty]
+        [Display(Name = "ShowLabel", Description = "Display label next to row of dots.", Order = 7, GroupName = "Display")]
+        public bool ShowLabel
+        { get; set; }
+
         [Browsable(false)]
         [XmlIgnore]
         public Series<double> Dots
@@ -161,18 +174,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private gambcl.ADXDots[] cacheADXDots;
-		public gambcl.ADXDots ADXDots(int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold)
+		public gambcl.ADXDots ADXDots(int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold, bool showLabel)
 		{
-			return ADXDots(Input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold);
+			return ADXDots(Input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold, showLabel);
 		}
 
-		public gambcl.ADXDots ADXDots(ISeries<double> input, int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold)
+		public gambcl.ADXDots ADXDots(ISeries<double> input, int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold, bool showLabel)
 		{
 			if (cacheADXDots != null)
 				for (int idx = 0; idx < cacheADXDots.Length; idx++)
-					if (cacheADXDots[idx] != null && cacheADXDots[idx].Period == period && cacheADXDots[idx].DisplayLevel == displayLevel && cacheADXDots[idx].MediumTrendThreshold == mediumTrendThreshold && cacheADXDots[idx].StrongTrendThreshold == strongTrendThreshold && cacheADXDots[idx].EqualsInput(input))
+					if (cacheADXDots[idx] != null && cacheADXDots[idx].Period == period && cacheADXDots[idx].DisplayLevel == displayLevel && cacheADXDots[idx].MediumTrendThreshold == mediumTrendThreshold && cacheADXDots[idx].StrongTrendThreshold == strongTrendThreshold && cacheADXDots[idx].ShowLabel == showLabel && cacheADXDots[idx].EqualsInput(input))
 						return cacheADXDots[idx];
-			return CacheIndicator<gambcl.ADXDots>(new gambcl.ADXDots(){ Period = period, DisplayLevel = displayLevel, MediumTrendThreshold = mediumTrendThreshold, StrongTrendThreshold = strongTrendThreshold }, input, ref cacheADXDots);
+			return CacheIndicator<gambcl.ADXDots>(new gambcl.ADXDots(){ Period = period, DisplayLevel = displayLevel, MediumTrendThreshold = mediumTrendThreshold, StrongTrendThreshold = strongTrendThreshold, ShowLabel = showLabel }, input, ref cacheADXDots);
 		}
 	}
 }
@@ -181,14 +194,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.gambcl.ADXDots ADXDots(int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold)
+		public Indicators.gambcl.ADXDots ADXDots(int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold, bool showLabel)
 		{
-			return indicator.ADXDots(Input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold);
+			return indicator.ADXDots(Input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold, showLabel);
 		}
 
-		public Indicators.gambcl.ADXDots ADXDots(ISeries<double> input , int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold)
+		public Indicators.gambcl.ADXDots ADXDots(ISeries<double> input , int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold, bool showLabel)
 		{
-			return indicator.ADXDots(input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold);
+			return indicator.ADXDots(input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold, showLabel);
 		}
 	}
 }
@@ -197,14 +210,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.gambcl.ADXDots ADXDots(int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold)
+		public Indicators.gambcl.ADXDots ADXDots(int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold, bool showLabel)
 		{
-			return indicator.ADXDots(Input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold);
+			return indicator.ADXDots(Input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold, showLabel);
 		}
 
-		public Indicators.gambcl.ADXDots ADXDots(ISeries<double> input , int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold)
+		public Indicators.gambcl.ADXDots ADXDots(ISeries<double> input , int period, int displayLevel, double mediumTrendThreshold, double strongTrendThreshold, bool showLabel)
 		{
-			return indicator.ADXDots(input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold);
+			return indicator.ADXDots(input, period, displayLevel, mediumTrendThreshold, strongTrendThreshold, showLabel);
 		}
 	}
 }
