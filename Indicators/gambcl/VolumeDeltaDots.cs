@@ -12,6 +12,8 @@ using NinjaTrader.NinjaScript.DrawingTools;
 //This namespace holds Indicators in this folder and is required. Do not change it. 
 namespace NinjaTrader.NinjaScript.Indicators.gambcl
 {
+    // This indicator makes use of Volume Delta by Gill
+    // https://ninjatraderecosystem.com/user-app-share-download/delta-volume-update/
     public class VolumeDeltaDots : Indicator
 	{
         #region Members
@@ -31,7 +33,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
 				DrawOnPricePanel							= false;
 				DrawHorizontalGridLines						= true;
 				DrawVerticalGridLines						= true;
-				PaintPriceMarkers							= true;
+				PaintPriceMarkers							= false;
 				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
                 MaximumBarsLookBack                         = MaximumBarsLookBack.Infinite;
                 //Disable this property if your indicator requires custom values that cumulate with each new market data event. 
