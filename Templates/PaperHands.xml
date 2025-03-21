@@ -29,7 +29,7 @@
           <AutoScale>true</AutoScale>
           <CenterPriceOnScale>false</CenterPriceOnScale>
           <DisplayInDataBox>true</DisplayInDataBox>
-          <Label>NQ 03-25</Label>
+          <Label>NQ 06-25</Label>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <Panel>0</Panel>
@@ -53,7 +53,7 @@
           <ShortExecutionBrushSerialize>DEFAULT</ShortExecutionBrushSerialize>
           <BarsSeriesId>1d6ae6a3aa3f4e12914d759775dbf662</BarsSeriesId>
           <Id>beea99760e8749c6a9477dd5665cc393</Id>
-          <Instrument>NQ 03-25</Instrument>
+          <Instrument>NQ 06-25</Instrument>
           <IsLinked>true</IsLinked>
           <IsPrimarySeries>true</IsPrimarySeries>
           <ZOrder>2</ZOrder>
@@ -80,7 +80,7 @@
       </BarsProperties>
     </DataSeries>
     <Indicators>
-      <Indicator BarsIndex="0" Instrument="NQ 03-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.HeikenAshi8" Panel="0" DisplayName="HeikenAshi8(#FFFF0000,#FF00FF00,#FF696969)">
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.HeikenAshi8" Panel="0" DisplayName="HeikenAshi8(#FFFF0000,#FF00FF00,#FF696969)">
         <HeikenAshi8 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <IsVisible>true</IsVisible>
           <AreLinesConfigurable>true</AreLinesConfigurable>
@@ -98,11 +98,11 @@
           </BarsPeriodSerializable>
           <BarsToLoad>0</BarsToLoad>
           <DisplayInDataBox>true</DisplayInDataBox>
-          <From>2025-03-08T00:00:00</From>
+          <From>2025-03-16T00:00:00</From>
           <Panel>0</Panel>
           <ScaleJustification>Right</ScaleJustification>
           <ShowTransparentPlotsInDataBox>false</ShowTransparentPlotsInDataBox>
-          <To>2025-03-13T00:00:00</To>
+          <To>2025-03-21T00:00:00</To>
           <Calculate>OnEachTick</Calculate>
           <Displacement>0</Displacement>
           <IsAutoScale>true</IsAutoScale>
@@ -169,8 +169,8 @@
           <DrawOnPricePanel>true</DrawOnPricePanel>
           <PaintPriceMarkers>false</PaintPriceMarkers>
           <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
-          <IndicatorId>2894</IndicatorId>
-          <InstrumentDeserialized>NQ 03-25 Globex</InstrumentDeserialized>
+          <IndicatorId>184</IndicatorId>
+          <InstrumentDeserialized>NQ 06-25 Globex</InstrumentDeserialized>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <ZOrder>10005</ZOrder>
@@ -183,7 +183,7 @@
           <PriceType>Close</PriceType>
         </Input>
       </Indicator>
-      <Indicator BarsIndex="0" Instrument="NQ 03-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.RealOpenClose" Panel="-1" DisplayName="RealOpenClose(True,True)">
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.RealOpenClose" Panel="-1" DisplayName="RealOpenClose(True,True)">
         <RealOpenClose xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <IsVisible>true</IsVisible>
           <AreLinesConfigurable>true</AreLinesConfigurable>
@@ -201,11 +201,11 @@
           </BarsPeriodSerializable>
           <BarsToLoad>0</BarsToLoad>
           <DisplayInDataBox>true</DisplayInDataBox>
-          <From>2025-03-08T00:00:00</From>
+          <From>2025-03-16T00:00:00</From>
           <Panel>-1</Panel>
           <ScaleJustification>Right</ScaleJustification>
           <ShowTransparentPlotsInDataBox>false</ShowTransparentPlotsInDataBox>
-          <To>2025-03-13T00:00:00</To>
+          <To>2025-03-21T00:00:00</To>
           <Calculate>OnPriceChange</Calculate>
           <Displacement>0</Displacement>
           <IsAutoScale>true</IsAutoScale>
@@ -248,8 +248,8 @@
           <DrawOnPricePanel>true</DrawOnPricePanel>
           <PaintPriceMarkers>false</PaintPriceMarkers>
           <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
-          <IndicatorId>2895</IndicatorId>
-          <InstrumentDeserialized>NQ 03-25 Globex</InstrumentDeserialized>
+          <IndicatorId>187</IndicatorId>
+          <InstrumentDeserialized>NQ 06-25 Globex</InstrumentDeserialized>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <ZOrder>10006</ZOrder>
@@ -260,7 +260,7 @@
           <PriceType>Close</PriceType>
         </Input>
       </Indicator>
-      <Indicator BarsIndex="0" Instrument="NQ 03-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.SessionVWAP" Panel="-1" DisplayName="SessionVWAP">
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.SessionVWAP" Panel="-1" DisplayName="SessionVWAP">
         <SessionVWAP xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <IsVisible>true</IsVisible>
           <AreLinesConfigurable>true</AreLinesConfigurable>
@@ -278,11 +278,11 @@
           </BarsPeriodSerializable>
           <BarsToLoad>0</BarsToLoad>
           <DisplayInDataBox>true</DisplayInDataBox>
-          <From>2025-03-08T00:00:00</From>
+          <From>2025-03-16T00:00:00</From>
           <Panel>-1</Panel>
           <ScaleJustification>Right</ScaleJustification>
           <ShowTransparentPlotsInDataBox>false</ShowTransparentPlotsInDataBox>
-          <To>2025-03-13T00:00:00</To>
+          <To>2025-03-21T00:00:00</To>
           <Calculate>OnBarClose</Calculate>
           <Displacement>0</Displacement>
           <IsAutoScale>true</IsAutoScale>
@@ -297,7 +297,7 @@
               <BrushSerialize>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FF00BFFF&lt;/SolidColorBrush&gt;</BrushSerialize>
               <DashStyleHelper>Solid</DashStyleHelper>
               <Opacity>100</Opacity>
-              <Width>1</Width>
+              <Width>2</Width>
               <AutoWidth>false</AutoWidth>
               <Max>1.7976931348623157E+308</Max>
               <Min>-1.7976931348623157E+308</Min>
@@ -313,8 +313,8 @@
           <DrawOnPricePanel>true</DrawOnPricePanel>
           <PaintPriceMarkers>true</PaintPriceMarkers>
           <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
-          <IndicatorId>2896</IndicatorId>
-          <InstrumentDeserialized>NQ 03-25 Globex</InstrumentDeserialized>
+          <IndicatorId>190</IndicatorId>
+          <InstrumentDeserialized>NQ 06-25 Globex</InstrumentDeserialized>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <ZOrder>10007</ZOrder>
@@ -323,7 +323,7 @@
           <PriceType>Close</PriceType>
         </Input>
       </Indicator>
-      <Indicator BarsIndex="0" Instrument="NQ 03-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.ADXDots" Panel="1" DisplayName="ADXDots(35,15,14,23)">
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.ADXDots" Panel="1" DisplayName="ADXDots(32,15,14,True,23)">
         <ADXDots xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <IsVisible>true</IsVisible>
           <AreLinesConfigurable>true</AreLinesConfigurable>
@@ -341,11 +341,11 @@
           </BarsPeriodSerializable>
           <BarsToLoad>0</BarsToLoad>
           <DisplayInDataBox>false</DisplayInDataBox>
-          <From>2025-03-08T00:00:00</From>
+          <From>2025-03-16T00:00:00</From>
           <Panel>1</Panel>
           <ScaleJustification>Right</ScaleJustification>
           <ShowTransparentPlotsInDataBox>false</ShowTransparentPlotsInDataBox>
-          <To>2025-03-13T00:00:00</To>
+          <To>2025-03-21T00:00:00</To>
           <Calculate>OnPriceChange</Calculate>
           <Displacement>0</Displacement>
           <IsAutoScale>true</IsAutoScale>
@@ -360,7 +360,7 @@
               <BrushSerialize>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFFFFFFF&lt;/SolidColorBrush&gt;</BrushSerialize>
               <DashStyleHelper>Solid</DashStyleHelper>
               <Opacity>100</Opacity>
-              <Width>5</Width>
+              <Width>4</Width>
               <AutoWidth>false</AutoWidth>
               <Max>1.7976931348623157E+308</Max>
               <Min>-1.7976931348623157E+308</Min>
@@ -376,24 +376,25 @@
           <DrawOnPricePanel>false</DrawOnPricePanel>
           <PaintPriceMarkers>false</PaintPriceMarkers>
           <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
-          <IndicatorId>2897</IndicatorId>
-          <InstrumentDeserialized>NQ 03-25 Globex</InstrumentDeserialized>
+          <IndicatorId>193</IndicatorId>
+          <InstrumentDeserialized>NQ 06-25 Globex</InstrumentDeserialized>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <ZOrder>10004</ZOrder>
           <Period>14</Period>
-          <DisplayLevel>35</DisplayLevel>
+          <DisplayLevel>32</DisplayLevel>
           <MediumTrendThreshold>15</MediumTrendThreshold>
           <StrongTrendThreshold>23</StrongTrendThreshold>
           <WeakTrendColorSerialize>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFE1BEE7&lt;/SolidColorBrush&gt;</WeakTrendColorSerialize>
           <MediumTrendColorSerialize>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFBA68C8&lt;/SolidColorBrush&gt;</MediumTrendColorSerialize>
           <StrongTrendColorSerialize>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FF7B1FA2&lt;/SolidColorBrush&gt;</StrongTrendColorSerialize>
+          <ShowLabel>true</ShowLabel>
         </ADXDots>
         <Input>
           <PriceType>Close</PriceType>
         </Input>
       </Indicator>
-      <Indicator BarsIndex="0" Instrument="NQ 03-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.HeikenAshiDots" Panel="1" DisplayName="HeikenAshiDots(#FFFF0000,#FF008000,#FFFFFF00,65)">
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.HeikenAshiDots" Panel="1" DisplayName="HeikenAshiDots(#FFFF0000,#FF008000,#FFFFFF00,68,True)">
         <HeikenAshiDots xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <IsVisible>true</IsVisible>
           <AreLinesConfigurable>true</AreLinesConfigurable>
@@ -411,11 +412,11 @@
           </BarsPeriodSerializable>
           <BarsToLoad>0</BarsToLoad>
           <DisplayInDataBox>false</DisplayInDataBox>
-          <From>2025-03-08T00:00:00</From>
+          <From>2025-03-16T00:00:00</From>
           <Panel>1</Panel>
           <ScaleJustification>Right</ScaleJustification>
           <ShowTransparentPlotsInDataBox>false</ShowTransparentPlotsInDataBox>
-          <To>2025-03-13T00:00:00</To>
+          <To>2025-03-21T00:00:00</To>
           <Calculate>OnPriceChange</Calculate>
           <Displacement>0</Displacement>
           <IsAutoScale>true</IsAutoScale>
@@ -430,7 +431,7 @@
               <BrushSerialize>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFFFFFFF&lt;/SolidColorBrush&gt;</BrushSerialize>
               <DashStyleHelper>Solid</DashStyleHelper>
               <Opacity>100</Opacity>
-              <Width>5</Width>
+              <Width>4</Width>
               <AutoWidth>false</AutoWidth>
               <Max>1.7976931348623157E+308</Max>
               <Min>-1.7976931348623157E+308</Min>
@@ -446,21 +447,22 @@
           <DrawOnPricePanel>false</DrawOnPricePanel>
           <PaintPriceMarkers>false</PaintPriceMarkers>
           <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
-          <IndicatorId>2898</IndicatorId>
-          <InstrumentDeserialized>NQ 03-25 Globex</InstrumentDeserialized>
+          <IndicatorId>196</IndicatorId>
+          <InstrumentDeserialized>NQ 06-25 Globex</InstrumentDeserialized>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <ZOrder>10007</ZOrder>
-          <DisplayLevel>65</DisplayLevel>
+          <DisplayLevel>68</DisplayLevel>
           <BullishTrendBrushSerializable>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FF008000&lt;/SolidColorBrush&gt;</BullishTrendBrushSerializable>
           <ChangingTrendBrushSerializable>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFFFFF00&lt;/SolidColorBrush&gt;</ChangingTrendBrushSerializable>
           <BearishTrendBrushSerializable>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFFF0000&lt;/SolidColorBrush&gt;</BearishTrendBrushSerializable>
+          <ShowLabel>true</ShowLabel>
         </HeikenAshiDots>
         <Input>
           <PriceType>Close</PriceType>
         </Input>
       </Indicator>
-      <Indicator BarsIndex="0" Instrument="NQ 03-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.SMA" Panel="-1" DisplayName="SMA(50)">
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.SMA" Panel="-1" DisplayName="SMA(50)">
         <SMA xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <IsVisible>true</IsVisible>
           <AreLinesConfigurable>true</AreLinesConfigurable>
@@ -478,11 +480,11 @@
           </BarsPeriodSerializable>
           <BarsToLoad>0</BarsToLoad>
           <DisplayInDataBox>true</DisplayInDataBox>
-          <From>2025-03-08T00:00:00</From>
+          <From>2025-03-16T00:00:00</From>
           <Panel>-1</Panel>
           <ScaleJustification>Right</ScaleJustification>
           <ShowTransparentPlotsInDataBox>false</ShowTransparentPlotsInDataBox>
-          <To>2025-03-13T00:00:00</To>
+          <To>2025-03-21T00:00:00</To>
           <Calculate>OnBarClose</Calculate>
           <Displacement>0</Displacement>
           <IsAutoScale>true</IsAutoScale>
@@ -513,8 +515,8 @@
           <DrawOnPricePanel>true</DrawOnPricePanel>
           <PaintPriceMarkers>true</PaintPriceMarkers>
           <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
-          <IndicatorId>2899</IndicatorId>
-          <InstrumentDeserialized>NQ 03-25 Globex</InstrumentDeserialized>
+          <IndicatorId>199</IndicatorId>
+          <InstrumentDeserialized>NQ 06-25 Globex</InstrumentDeserialized>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <ZOrder>10008</ZOrder>
@@ -524,7 +526,7 @@
           <PriceType>Close</PriceType>
         </Input>
       </Indicator>
-      <Indicator BarsIndex="0" Instrument="NQ 03-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.MACloudDots" Panel="1" DisplayName="MACloudDots(#FFFF0000,#FF008000,50,9,EMA,21)">
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.MACloudDots" Panel="1" DisplayName="MACloudDots(#FFFF0000,#FF008000,56,9,EMA,True,21)">
         <MACloudDots xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <IsVisible>true</IsVisible>
           <AreLinesConfigurable>true</AreLinesConfigurable>
@@ -542,11 +544,11 @@
           </BarsPeriodSerializable>
           <BarsToLoad>0</BarsToLoad>
           <DisplayInDataBox>false</DisplayInDataBox>
-          <From>2025-03-08T00:00:00</From>
+          <From>2025-03-16T00:00:00</From>
           <Panel>1</Panel>
           <ScaleJustification>Right</ScaleJustification>
           <ShowTransparentPlotsInDataBox>false</ShowTransparentPlotsInDataBox>
-          <To>2025-03-13T00:00:00</To>
+          <To>2025-03-21T00:00:00</To>
           <Calculate>OnPriceChange</Calculate>
           <Displacement>0</Displacement>
           <IsAutoScale>true</IsAutoScale>
@@ -561,7 +563,7 @@
               <BrushSerialize>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#00FFFFFF&lt;/SolidColorBrush&gt;</BrushSerialize>
               <DashStyleHelper>Solid</DashStyleHelper>
               <Opacity>100</Opacity>
-              <Width>5</Width>
+              <Width>4</Width>
               <AutoWidth>false</AutoWidth>
               <Max>1.7976931348623157E+308</Max>
               <Min>-1.7976931348623157E+308</Min>
@@ -577,23 +579,24 @@
           <DrawOnPricePanel>false</DrawOnPricePanel>
           <PaintPriceMarkers>false</PaintPriceMarkers>
           <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
-          <IndicatorId>2900</IndicatorId>
-          <InstrumentDeserialized>NQ 03-25 Globex</InstrumentDeserialized>
+          <IndicatorId>202</IndicatorId>
+          <InstrumentDeserialized>NQ 06-25 Globex</InstrumentDeserialized>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <ZOrder>10008</ZOrder>
           <MAType>EMA</MAType>
           <FastPeriod>9</FastPeriod>
           <SlowPeriod>21</SlowPeriod>
-          <DisplayLevel>50</DisplayLevel>
+          <DisplayLevel>56</DisplayLevel>
           <BullishTrendBrushSerializable>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FF008000&lt;/SolidColorBrush&gt;</BullishTrendBrushSerializable>
           <BearishTrendBrushSerializable>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFFF0000&lt;/SolidColorBrush&gt;</BearishTrendBrushSerializable>
+          <ShowLabel>true</ShowLabel>
         </MACloudDots>
         <Input>
           <PriceType>Close</PriceType>
         </Input>
       </Indicator>
-      <Indicator BarsIndex="0" Instrument="NQ 03-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeet" Panel="1" DisplayName="PaperFeet(0.2,8,True,True,True,13,Alert2.wav,#FF008000,LaguerreRSIWithFractalEnergy,8,80,#FFFF0000,20,#FF008000,40,Alert2.wav,#FFFF0000,50)">
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeet" Panel="1" DisplayName="PaperFeet(0.2,8,True,True,True,13,Alert2.wav,#FF008000,LaguerreRSIWithFractalEnergy,8,80,#FFFF0000,20,#FF008000,40,Alert2.wav,#FFFF0000,50)">
         <PaperFeet xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <IsVisible>true</IsVisible>
           <AreLinesConfigurable>true</AreLinesConfigurable>
@@ -611,11 +614,11 @@
           </BarsPeriodSerializable>
           <BarsToLoad>0</BarsToLoad>
           <DisplayInDataBox>true</DisplayInDataBox>
-          <From>2025-03-08T00:00:00</From>
+          <From>2025-03-16T00:00:00</From>
           <Panel>1</Panel>
           <ScaleJustification>Right</ScaleJustification>
           <ShowTransparentPlotsInDataBox>false</ShowTransparentPlotsInDataBox>
-          <To>2025-03-13T00:00:00</To>
+          <To>2025-03-21T00:00:00</To>
           <Calculate>OnPriceChange</Calculate>
           <Displacement>0</Displacement>
           <IsAutoScale>true</IsAutoScale>
@@ -646,8 +649,8 @@
           <DrawOnPricePanel>false</DrawOnPricePanel>
           <PaintPriceMarkers>true</PaintPriceMarkers>
           <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
-          <IndicatorId>2901</IndicatorId>
-          <InstrumentDeserialized>NQ 03-25 Globex</InstrumentDeserialized>
+          <IndicatorId>205</IndicatorId>
+          <InstrumentDeserialized>NQ 06-25 Globex</InstrumentDeserialized>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <ZOrder>10009</ZOrder>
@@ -674,7 +677,7 @@
           <PriceType>Close</PriceType>
         </Input>
       </Indicator>
-      <Indicator BarsIndex="0" Instrument="NQ 03-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.PaperArms" Panel="-1" DisplayName="PaperArms(0.2,#FFFF0000,8,#FF008000,40,False,True,True,True,True,True,True,48,24,9,13,Alert2.wav,Alert2.wav,Alert2.wav,#FF008000,LaguerreRSIWithFractalEnergy,EMA,8,80,20,Alert2.wav,Alert2.wav,Alert2.wav,#FFFF0000,HeikenAshiCandles,PaperArms_,21)">
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.PaperArms" Panel="-1" DisplayName="PaperArms(0.2,#FFFF0000,8,#FF008000,40,False,True,True,True,True,True,True,48,24,9,13,Alert2.wav,Alert2.wav,Alert2.wav,#FF008000,LaguerreRSIWithFractalEnergy,EMA,8,80,20,Alert2.wav,Alert2.wav,Alert2.wav,#FFFF0000,HeikenAshiCandles,PaperArms_,21)">
         <PaperArms xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <IsVisible>true</IsVisible>
           <AreLinesConfigurable>true</AreLinesConfigurable>
@@ -692,11 +695,11 @@
           </BarsPeriodSerializable>
           <BarsToLoad>0</BarsToLoad>
           <DisplayInDataBox>true</DisplayInDataBox>
-          <From>2025-03-08T00:00:00</From>
+          <From>2025-03-16T00:00:00</From>
           <Panel>-1</Panel>
           <ScaleJustification>Right</ScaleJustification>
           <ShowTransparentPlotsInDataBox>true</ShowTransparentPlotsInDataBox>
-          <To>2025-03-13T00:00:00</To>
+          <To>2025-03-21T00:00:00</To>
           <Calculate>OnPriceChange</Calculate>
           <Displacement>0</Displacement>
           <IsAutoScale>true</IsAutoScale>
@@ -751,8 +754,8 @@
           <DrawOnPricePanel>true</DrawOnPricePanel>
           <PaintPriceMarkers>true</PaintPriceMarkers>
           <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
-          <IndicatorId>2902</IndicatorId>
-          <InstrumentDeserialized>NQ 03-25 Globex</InstrumentDeserialized>
+          <IndicatorId>208</IndicatorId>
+          <InstrumentDeserialized>NQ 06-25 Globex</InstrumentDeserialized>
           <MaxSerialized>0</MaxSerialized>
           <MinSerialized>0</MinSerialized>
           <ZOrder>10009</ZOrder>
@@ -789,6 +792,73 @@
           <ShortReentryAlert>Alert2.wav</ShortReentryAlert>
           <ShortExitAlert>Alert2.wav</ShortExitAlert>
         </PaperArms>
+        <Input>
+          <PriceType>Close</PriceType>
+        </Input>
+      </Indicator>
+      <Indicator BarsIndex="0" Instrument="NQ 06-25 Globex" Name="NinjaTrader.NinjaScript.Indicators.gambcl.VolumeDeltaDots" Panel="1" DisplayName="VolumeDeltaDots(#FFFF0000,#FF008000,44,#FFFFFF00,True)">
+        <VolumeDeltaDots xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <IsVisible>true</IsVisible>
+          <AreLinesConfigurable>true</AreLinesConfigurable>
+          <ArePlotsConfigurable>true</ArePlotsConfigurable>
+          <BarsPeriodSerializable>
+            <BarsPeriodTypeSerialize>4</BarsPeriodTypeSerialize>
+            <BaseBarsPeriodType>Minute</BaseBarsPeriodType>
+            <BaseBarsPeriodValue>1</BaseBarsPeriodValue>
+            <VolumetricDeltaType>BidAsk</VolumetricDeltaType>
+            <MarketDataType>Last</MarketDataType>
+            <PointAndFigurePriceType>Close</PointAndFigurePriceType>
+            <ReversalType>Tick</ReversalType>
+            <Value>5</Value>
+            <Value2>1</Value2>
+          </BarsPeriodSerializable>
+          <BarsToLoad>0</BarsToLoad>
+          <DisplayInDataBox>false</DisplayInDataBox>
+          <From>2025-03-16T00:00:00</From>
+          <Panel>1</Panel>
+          <ScaleJustification>Right</ScaleJustification>
+          <ShowTransparentPlotsInDataBox>false</ShowTransparentPlotsInDataBox>
+          <To>2025-03-21T00:00:00</To>
+          <Calculate>OnEachTick</Calculate>
+          <Displacement>0</Displacement>
+          <IsAutoScale>true</IsAutoScale>
+          <IsDataSeriesRequired>true</IsDataSeriesRequired>
+          <IsOverlay>false</IsOverlay>
+          <Lines />
+          <MaximumBarsLookBack>Infinite</MaximumBarsLookBack>
+          <Name>VolumeDeltaDots</Name>
+          <Plots>
+            <Plot>
+              <IsOpacityVisible>false</IsOpacityVisible>
+              <BrushSerialize>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFFFFFFF&lt;/SolidColorBrush&gt;</BrushSerialize>
+              <DashStyleHelper>Solid</DashStyleHelper>
+              <Opacity>100</Opacity>
+              <Width>4</Width>
+              <AutoWidth>false</AutoWidth>
+              <Max>1.7976931348623157E+308</Max>
+              <Min>-1.7976931348623157E+308</Min>
+              <Name>Dots</Name>
+              <PlotStyle>Dot</PlotStyle>
+            </Plot>
+          </Plots>
+          <SelectedValueSeries>0</SelectedValueSeries>
+          <InputPlot>0</InputPlot>
+          <IsTradingHoursBreakLineVisible>true</IsTradingHoursBreakLineVisible>
+          <DrawHorizontalGridLines>true</DrawHorizontalGridLines>
+          <DrawVerticalGridLines>true</DrawVerticalGridLines>
+          <DrawOnPricePanel>false</DrawOnPricePanel>
+          <PaintPriceMarkers>false</PaintPriceMarkers>
+          <ChartHashCodeDeserialized>0</ChartHashCodeDeserialized>
+          <IndicatorId>2017</IndicatorId>
+          <MaxSerialized>0</MaxSerialized>
+          <MinSerialized>0</MinSerialized>
+          <ZOrder>10010</ZOrder>
+          <DisplayLevel>44</DisplayLevel>
+          <BullishVolumeDeltaBrushSerializable>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FF008000&lt;/SolidColorBrush&gt;</BullishVolumeDeltaBrushSerializable>
+          <EqualVolumeDeltaBrushSerializable>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFFFFF00&lt;/SolidColorBrush&gt;</EqualVolumeDeltaBrushSerializable>
+          <BearishVolumeDeltaBrushSerializable>&lt;SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"&gt;#FFFF0000&lt;/SolidColorBrush&gt;</BearishVolumeDeltaBrushSerializable>
+          <ShowLabel>true</ShowLabel>
+        </VolumeDeltaDots>
         <Input>
           <PriceType>Close</PriceType>
         </Input>
@@ -841,7 +911,7 @@
         <IsMaximized>false</IsMaximized>
         <Right>
           <ChartScaleProperties xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <YAxisRangeType>Fixed</YAxisRangeType>
+            <YAxisRangeType>Automatic</YAxisRangeType>
             <AutoScaleDateRangeType>ScreenDateRange</AutoScaleDateRangeType>
             <HorizontalGridlinesCalculation>Automatic</HorizontalGridlinesCalculation>
             <HorizontalGridlinesIntervalType>Points</HorizontalGridlinesIntervalType>
@@ -850,8 +920,8 @@
             <AutoScaleMarginLower>6</AutoScaleMarginLower>
             <AutoScaleMarginUpper>6</AutoScaleMarginUpper>
             <YAxisScalingType>Linear</YAxisScalingType>
-            <FixedScaleMaxSerialize>19499.679703903097</FixedScaleMaxSerialize>
-            <FixedScaleMinSerialize>19106.559703903094</FixedScaleMinSerialize>
+            <FixedScaleMaxSerialize>20063</FixedScaleMaxSerialize>
+            <FixedScaleMinSerialize>19795</FixedScaleMinSerialize>
           </ChartScaleProperties>
         </Right>
         <Left>
@@ -992,7 +1062,7 @@
       </ChartTraderProperties>
     </Properties>
     <ATM></ATM>
-    <Instrument>NQ 03-25</Instrument>
+    <Instrument>NQ 06-25</Instrument>
     <Quantity>1</Quantity>
     <TIF>Day</TIF>
   </ChartTrader>
