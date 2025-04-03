@@ -77,6 +77,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 LongEntryAlert                              = "Alert2.wav";
                 ShortEntryAlert                             = "Alert2.wav";
                 AddPlot(new Stroke(Brushes.White, 2), PlotStyle.Line, "LRSI");
+                AddPlot(Brushes.Transparent, "Signals");
                 _isRsiInitialized = false;
             }
             else if (State == State.Configure)
@@ -126,11 +127,23 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             LongEntrySignal[0] = EnableLongEntrySignals && (LRSI[1] <= OversoldLevel) && (LRSI[0] > OversoldLevel);
             ShortEntrySignal[0] = EnableShortEntrySignals && (LRSI[1] >= OverboughtLevel) && (LRSI[0] < OverboughtLevel);
             if (LongEntrySignal[0])
+            {
+                // LONG entry signal.
+                Signals[0] = 1;
                 BackBrush = _longEntrySignalBrush;
+            }
             else if (ShortEntrySignal[0])
+            {
+                // SHORT entry signal.
+                Signals[0] = -1;
                 BackBrush = _shortEntrySignalBrush;
+            }
             else
+            {
+                // No signal.
+                Signals[0] = 0;
                 BackBrush = Brushes.Transparent;
+            }
 
             // Alerts
             if (EnableAlerts && (State == State.Realtime) && IsFirstTickOfBar)
@@ -340,6 +353,13 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         public Series<double> LRSI
         {
             get { return Values[0]; }
+        }
+
+        [Browsable(false)]
+        [XmlIgnore]
+        public Series<double> Signals
+        {
+            get { return Values[1]; }
         }
 
         [Browsable(false)]

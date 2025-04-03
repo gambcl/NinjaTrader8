@@ -99,6 +99,9 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 AddPlot(Brushes.Transparent, "LRSI");
                 AddPlot(Brushes.Transparent, "FastMA");
                 AddPlot(Brushes.Transparent, "SlowMA");
+                AddPlot(Brushes.Transparent, "EntrySignals");
+                AddPlot(Brushes.Transparent, "ReentrySignals");
+                AddPlot(Brushes.Transparent, "ExitSignals");
                 _isRsiInitialized = false;
             }
             else if (State == State.Configure)
@@ -212,6 +215,29 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             {
                 RemoveDrawObject(shortExitSignalTag);
             }
+
+            // Signal plots (for Strategy Builder)
+            if (LongEntrySignal[0])
+                EntrySignals[0] = 1;
+            else if (ShortEntrySignal[0])
+                EntrySignals[0] = -1;
+            else
+                EntrySignals[0] = 0;
+
+            if (LongReentrySignal[0])
+                ReentrySignals[0] = 1;
+            else if (ShortReentrySignal[0])
+                ReentrySignals[0] = -1;
+            else
+                ReentrySignals[0] = 0;
+
+            if (LongExitSignal[0])
+                ExitSignals[0] = 1;
+            else if (ShortExitSignal[0])
+                ExitSignals[0] = -1;
+            else
+                ExitSignals[0] = 0;
+
 
             // Alerts
             if (EnableAlerts && (State == State.Realtime) && IsFirstTickOfBar)
@@ -473,6 +499,27 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         public Series<double> SlowMA
         {
             get { return Values[2]; }
+        }
+
+        [Browsable(false)]
+        [XmlIgnore]
+        public Series<double> EntrySignals
+        {
+            get { return Values[3]; }
+        }
+
+        [Browsable(false)]
+        [XmlIgnore]
+        public Series<double> ReentrySignals
+        {
+            get { return Values[4]; }
+        }
+
+        [Browsable(false)]
+        [XmlIgnore]
+        public Series<double> ExitSignals
+        {
+            get { return Values[5]; }
         }
 
         [Browsable(false)]
