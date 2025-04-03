@@ -90,12 +90,13 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 ShortSignalBrush                            = Brushes.Red;
                 SignalPrefix                                = "PaperArms_";
                 EnableAlerts                                = false;
-                LongEntryAlert                              = "Alert2.wav";
-                LongReentryAlert                            = "Alert2.wav";
-                LongExitAlert                               = "Alert2.wav";
-                ShortEntryAlert                             = "Alert2.wav";
-                ShortReentryAlert                           = "Alert2.wav";
-                ShortExitAlert                              = "Alert2.wav";
+                AlertSoundsPath                             = DefaultAlertFilePath();
+                LongEntryAlert                              = "LongEntry.wav";
+                LongReentryAlert                            = "LongEntry.wav";
+                LongExitAlert                               = "ExitLong.wav";
+                ShortEntryAlert                             = "ShortEntry.wav";
+                ShortReentryAlert                           = "ShortEntry.wav";
+                ShortExitAlert                              = "ExitShort.wav";
                 AddPlot(Brushes.Transparent, "LRSI");
                 AddPlot(Brushes.Transparent, "FastMA");
                 AddPlot(Brushes.Transparent, "SlowMA");
@@ -108,8 +109,8 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
 			{
                 _isRsiInitialized = false;
                 _ha = HeikenAshi8(Brushes.Transparent, Brushes.Transparent, Brushes.Transparent);
-                _maCloud = MACloud(MAType, FastPeriod, SlowPeriod, BullishCloudBrush, BearishCloudBrush, CloudOpacity, false, 0, string.Empty, false, string.Empty, string.Empty);
-                _paperFeet = PaperFeet(LRSIType, Alpha, NFE, GLength, BetaDev, OverboughtLevel, OversoldLevel, Brushes.Transparent, Brushes.Transparent, 0, true, true, Brushes.Transparent, Brushes.Transparent, 0, false, string.Empty, string.Empty);
+                _maCloud = MACloud(MAType, FastPeriod, SlowPeriod, BullishCloudBrush, BearishCloudBrush, CloudOpacity, false, 0, string.Empty, false, string.Empty, string.Empty, string.Empty);
+                _paperFeet = PaperFeet(LRSIType, Alpha, NFE, GLength, BetaDev, OverboughtLevel, OversoldLevel, Brushes.Transparent, Brushes.Transparent, 0, true, true, Brushes.Transparent, Brushes.Transparent, 0, false, string.Empty, string.Empty, string.Empty);
 
                 _longEntrySignal = new Series<bool>(this);
                 _longReentrySignal = new Series<bool>(this);
@@ -244,32 +245,32 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             {
                 if (EnableLongEntrySignals && !string.IsNullOrWhiteSpace(LongEntryAlert) && LongEntrySignal[1])
                 {
-                    string audioFile = LongEntryAlert.Contains(@"\") ? LongEntryAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + LongEntryAlert);
+                    string audioFile = ResolveAlertFilePath(LongEntryAlert, AlertSoundsPath);
                     Alert("LongEntryAlert", Priority.High, string.Format("Enter LONG: Laguerre RSI leaving oversold region {0:0.#}", LRSI[1]), audioFile, 10, Brushes.Black, LongSignalBrush);
                 }
                 if (EnableLongReentrySignals && !string.IsNullOrWhiteSpace(LongReentryAlert) && LongReentrySignal[1])
                 {
-                    string audioFile = LongReentryAlert.Contains(@"\") ? LongReentryAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + LongReentryAlert);
+                    string audioFile = ResolveAlertFilePath(LongReentryAlert, AlertSoundsPath);
                     Alert("LongReentryAlert", Priority.High, "Re-enter LONG: Trend returning to bullish", audioFile, 10, Brushes.Black, LongSignalBrush);
                 }
                 if (EnableLongExitSignals && !string.IsNullOrWhiteSpace(LongExitAlert) && LongExitSignal[1])
                 {
-                    string audioFile = LongExitAlert.Contains(@"\") ? LongExitAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + LongExitAlert);
+                    string audioFile = ResolveAlertFilePath(LongExitAlert, AlertSoundsPath);
                     Alert("LongExitAlert", Priority.High, "Exit LONG: Possible trend change", audioFile, 10, Brushes.Black, LongSignalBrush);
                 }
                 if (EnableShortEntrySignals && !string.IsNullOrWhiteSpace(ShortEntryAlert) && ShortEntrySignal[1])
                 {
-                    string audioFile = ShortEntryAlert.Contains(@"\") ? ShortEntryAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + ShortEntryAlert);
+                    string audioFile = ResolveAlertFilePath(ShortEntryAlert, AlertSoundsPath);
                     Alert("ShortEntryAlert", Priority.High, string.Format("Enter SHORT: Laguerre RSI leaving overbought region {0:0.#}", LRSI[1]), audioFile, 10, Brushes.Black, ShortSignalBrush);
                 }
                 if (EnableShortReentrySignals && !string.IsNullOrWhiteSpace(ShortReentryAlert) && ShortReentrySignal[1])
                 {
-                    string audioFile = ShortReentryAlert.Contains(@"\") ? ShortReentryAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + ShortReentryAlert);
+                    string audioFile = ResolveAlertFilePath(ShortReentryAlert, AlertSoundsPath);
                     Alert("ShortReentryAlert", Priority.High, "Re-enter SHORT: Trend returning to bearish", audioFile, 10, Brushes.Black, ShortSignalBrush);
                 }
                 if (EnableShortExitSignals && !string.IsNullOrWhiteSpace(ShortExitAlert) && ShortExitSignal[1])
                 {
-                    string audioFile = ShortExitAlert.Contains(@"\") ? ShortExitAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + ShortExitAlert);
+                    string audioFile = ResolveAlertFilePath(ShortExitAlert, AlertSoundsPath);
                     Alert("ShortExitAlert", Priority.High, "Exit SHORT: Possible trend change", audioFile, 10, Brushes.Black, ShortSignalBrush);
                 }
             }
@@ -451,32 +452,37 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Long Entry Alert", Description = "Alert sound used for confirmed LONG entry signals.", Order = 2, GroupName = "Alerts")]
+        [Display(Name = "Alert Sounds Path", Description = "Location of alert audio files used for confirmed signals.", Order = 2, GroupName = "Alerts")]
+        public string AlertSoundsPath
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Long Entry Alert", Description = "Alert sound used for confirmed LONG entry signals.", Order = 3, GroupName = "Alerts")]
         public string LongEntryAlert
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Long Re-entry Alert", Description = "Alert sound used for confirmed LONG re-entry signals.", Order = 3, GroupName = "Alerts")]
+        [Display(Name = "Long Re-entry Alert", Description = "Alert sound used for confirmed LONG re-entry signals.", Order = 4, GroupName = "Alerts")]
         public string LongReentryAlert
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Long Exit Alert", Description = "Alert sound used for confirmed LONG exit signals.", Order = 4, GroupName = "Alerts")]
+        [Display(Name = "Long Exit Alert", Description = "Alert sound used for confirmed LONG exit signals.", Order = 5, GroupName = "Alerts")]
         public string LongExitAlert
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Short Entry Alert", Description = "Alert sound used for confirmed SHORT entry signals.", Order = 5, GroupName = "Alerts")]
+        [Display(Name = "Short Entry Alert", Description = "Alert sound used for confirmed SHORT entry signals.", Order = 6, GroupName = "Alerts")]
         public string ShortEntryAlert
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Short Re-entry Alert", Description = "Alert sound used for confirmed SHORT re-entry signals.", Order = 6, GroupName = "Alerts")]
+        [Display(Name = "Short Re-entry Alert", Description = "Alert sound used for confirmed SHORT re-entry signals.", Order = 7, GroupName = "Alerts")]
         public string ShortReentryAlert
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Short Exit Alert", Description = "Alert sound used for confirmed SHORT exit signals.", Order = 7, GroupName = "Alerts")]
+        [Display(Name = "Short Exit Alert", Description = "Alert sound used for confirmed SHORT exit signals.", Order = 8, GroupName = "Alerts")]
         public string ShortExitAlert
         { get; set; }
 
@@ -574,18 +580,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private gambcl.PaperArms[] cachePaperArms;
-		public gambcl.PaperArms PaperArms(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
+		public gambcl.PaperArms PaperArms(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
 		{
-			return PaperArms(Input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
+			return PaperArms(Input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
 		}
 
-		public gambcl.PaperArms PaperArms(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
+		public gambcl.PaperArms PaperArms(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
 		{
 			if (cachePaperArms != null)
 				for (int idx = 0; idx < cachePaperArms.Length; idx++)
-					if (cachePaperArms[idx] != null && cachePaperArms[idx].MAType == mAType && cachePaperArms[idx].FastPeriod == fastPeriod && cachePaperArms[idx].SlowPeriod == slowPeriod && cachePaperArms[idx].BullishCloudBrush == bullishCloudBrush && cachePaperArms[idx].BearishCloudBrush == bearishCloudBrush && cachePaperArms[idx].CloudOpacity == cloudOpacity && cachePaperArms[idx].LRSIType == lRSIType && cachePaperArms[idx].Alpha == alpha && cachePaperArms[idx].NFE == nFE && cachePaperArms[idx].GLength == gLength && cachePaperArms[idx].BetaDev == betaDev && cachePaperArms[idx].OverboughtLevel == overboughtLevel && cachePaperArms[idx].OversoldLevel == oversoldLevel && cachePaperArms[idx].EnableLongEntrySignals == enableLongEntrySignals && cachePaperArms[idx].EnableLongReentrySignals == enableLongReentrySignals && cachePaperArms[idx].EnableLongExitSignals == enableLongExitSignals && cachePaperArms[idx].EnableShortEntrySignals == enableShortEntrySignals && cachePaperArms[idx].EnableShortReentrySignals == enableShortReentrySignals && cachePaperArms[idx].EnableShortExitSignals == enableShortExitSignals && cachePaperArms[idx].SignalPosition == signalPosition && cachePaperArms[idx].EntrySignalOffset == entrySignalOffset && cachePaperArms[idx].ExitSignalOffset == exitSignalOffset && cachePaperArms[idx].LongSignalBrush == longSignalBrush && cachePaperArms[idx].ShortSignalBrush == shortSignalBrush && cachePaperArms[idx].SignalPrefix == signalPrefix && cachePaperArms[idx].EnableAlerts == enableAlerts && cachePaperArms[idx].LongEntryAlert == longEntryAlert && cachePaperArms[idx].LongReentryAlert == longReentryAlert && cachePaperArms[idx].LongExitAlert == longExitAlert && cachePaperArms[idx].ShortEntryAlert == shortEntryAlert && cachePaperArms[idx].ShortReentryAlert == shortReentryAlert && cachePaperArms[idx].ShortExitAlert == shortExitAlert && cachePaperArms[idx].EqualsInput(input))
+					if (cachePaperArms[idx] != null && cachePaperArms[idx].MAType == mAType && cachePaperArms[idx].FastPeriod == fastPeriod && cachePaperArms[idx].SlowPeriod == slowPeriod && cachePaperArms[idx].BullishCloudBrush == bullishCloudBrush && cachePaperArms[idx].BearishCloudBrush == bearishCloudBrush && cachePaperArms[idx].CloudOpacity == cloudOpacity && cachePaperArms[idx].LRSIType == lRSIType && cachePaperArms[idx].Alpha == alpha && cachePaperArms[idx].NFE == nFE && cachePaperArms[idx].GLength == gLength && cachePaperArms[idx].BetaDev == betaDev && cachePaperArms[idx].OverboughtLevel == overboughtLevel && cachePaperArms[idx].OversoldLevel == oversoldLevel && cachePaperArms[idx].EnableLongEntrySignals == enableLongEntrySignals && cachePaperArms[idx].EnableLongReentrySignals == enableLongReentrySignals && cachePaperArms[idx].EnableLongExitSignals == enableLongExitSignals && cachePaperArms[idx].EnableShortEntrySignals == enableShortEntrySignals && cachePaperArms[idx].EnableShortReentrySignals == enableShortReentrySignals && cachePaperArms[idx].EnableShortExitSignals == enableShortExitSignals && cachePaperArms[idx].SignalPosition == signalPosition && cachePaperArms[idx].EntrySignalOffset == entrySignalOffset && cachePaperArms[idx].ExitSignalOffset == exitSignalOffset && cachePaperArms[idx].LongSignalBrush == longSignalBrush && cachePaperArms[idx].ShortSignalBrush == shortSignalBrush && cachePaperArms[idx].SignalPrefix == signalPrefix && cachePaperArms[idx].EnableAlerts == enableAlerts && cachePaperArms[idx].AlertSoundsPath == alertSoundsPath && cachePaperArms[idx].LongEntryAlert == longEntryAlert && cachePaperArms[idx].LongReentryAlert == longReentryAlert && cachePaperArms[idx].LongExitAlert == longExitAlert && cachePaperArms[idx].ShortEntryAlert == shortEntryAlert && cachePaperArms[idx].ShortReentryAlert == shortReentryAlert && cachePaperArms[idx].ShortExitAlert == shortExitAlert && cachePaperArms[idx].EqualsInput(input))
 						return cachePaperArms[idx];
-			return CacheIndicator<gambcl.PaperArms>(new gambcl.PaperArms(){ MAType = mAType, FastPeriod = fastPeriod, SlowPeriod = slowPeriod, BullishCloudBrush = bullishCloudBrush, BearishCloudBrush = bearishCloudBrush, CloudOpacity = cloudOpacity, LRSIType = lRSIType, Alpha = alpha, NFE = nFE, GLength = gLength, BetaDev = betaDev, OverboughtLevel = overboughtLevel, OversoldLevel = oversoldLevel, EnableLongEntrySignals = enableLongEntrySignals, EnableLongReentrySignals = enableLongReentrySignals, EnableLongExitSignals = enableLongExitSignals, EnableShortEntrySignals = enableShortEntrySignals, EnableShortReentrySignals = enableShortReentrySignals, EnableShortExitSignals = enableShortExitSignals, SignalPosition = signalPosition, EntrySignalOffset = entrySignalOffset, ExitSignalOffset = exitSignalOffset, LongSignalBrush = longSignalBrush, ShortSignalBrush = shortSignalBrush, SignalPrefix = signalPrefix, EnableAlerts = enableAlerts, LongEntryAlert = longEntryAlert, LongReentryAlert = longReentryAlert, LongExitAlert = longExitAlert, ShortEntryAlert = shortEntryAlert, ShortReentryAlert = shortReentryAlert, ShortExitAlert = shortExitAlert }, input, ref cachePaperArms);
+			return CacheIndicator<gambcl.PaperArms>(new gambcl.PaperArms(){ MAType = mAType, FastPeriod = fastPeriod, SlowPeriod = slowPeriod, BullishCloudBrush = bullishCloudBrush, BearishCloudBrush = bearishCloudBrush, CloudOpacity = cloudOpacity, LRSIType = lRSIType, Alpha = alpha, NFE = nFE, GLength = gLength, BetaDev = betaDev, OverboughtLevel = overboughtLevel, OversoldLevel = oversoldLevel, EnableLongEntrySignals = enableLongEntrySignals, EnableLongReentrySignals = enableLongReentrySignals, EnableLongExitSignals = enableLongExitSignals, EnableShortEntrySignals = enableShortEntrySignals, EnableShortReentrySignals = enableShortReentrySignals, EnableShortExitSignals = enableShortExitSignals, SignalPosition = signalPosition, EntrySignalOffset = entrySignalOffset, ExitSignalOffset = exitSignalOffset, LongSignalBrush = longSignalBrush, ShortSignalBrush = shortSignalBrush, SignalPrefix = signalPrefix, EnableAlerts = enableAlerts, AlertSoundsPath = alertSoundsPath, LongEntryAlert = longEntryAlert, LongReentryAlert = longReentryAlert, LongExitAlert = longExitAlert, ShortEntryAlert = shortEntryAlert, ShortReentryAlert = shortReentryAlert, ShortExitAlert = shortExitAlert }, input, ref cachePaperArms);
 		}
 	}
 }
@@ -594,14 +600,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.gambcl.PaperArms PaperArms(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
+		public Indicators.gambcl.PaperArms PaperArms(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
 		{
-			return indicator.PaperArms(Input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
+			return indicator.PaperArms(Input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
 		}
 
-		public Indicators.gambcl.PaperArms PaperArms(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
+		public Indicators.gambcl.PaperArms PaperArms(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
 		{
-			return indicator.PaperArms(input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
+			return indicator.PaperArms(input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
 		}
 	}
 }
@@ -610,14 +616,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.gambcl.PaperArms PaperArms(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
+		public Indicators.gambcl.PaperArms PaperArms(NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
 		{
-			return indicator.PaperArms(Input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
+			return indicator.PaperArms(Input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
 		}
 
-		public Indicators.gambcl.PaperArms PaperArms(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
+		public Indicators.gambcl.PaperArms PaperArms(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.MACloudEnums.MATypeEnum mAType, int fastPeriod, int slowPeriod, Brush bullishCloudBrush, Brush bearishCloudBrush, int cloudOpacity, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, bool enableLongEntrySignals, bool enableLongReentrySignals, bool enableLongExitSignals, bool enableShortEntrySignals, bool enableShortReentrySignals, bool enableShortExitSignals, NinjaTrader.NinjaScript.Indicators.gambcl.PaperArmsEnums.SignalPositionEnum signalPosition, int entrySignalOffset, int exitSignalOffset, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string longReentryAlert, string longExitAlert, string shortEntryAlert, string shortReentryAlert, string shortExitAlert)
 		{
-			return indicator.PaperArms(input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
+			return indicator.PaperArms(input, mAType, fastPeriod, slowPeriod, bullishCloudBrush, bearishCloudBrush, cloudOpacity, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, enableLongEntrySignals, enableLongReentrySignals, enableLongExitSignals, enableShortEntrySignals, enableShortReentrySignals, enableShortExitSignals, signalPosition, entrySignalOffset, exitSignalOffset, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, longReentryAlert, longExitAlert, shortEntryAlert, shortReentryAlert, shortExitAlert);
 		}
 	}
 }

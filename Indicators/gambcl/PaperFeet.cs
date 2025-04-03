@@ -74,15 +74,16 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 ShortEntrySignalBrush                       = Brushes.Red;
                 SignalsOpacity                              = 50;
                 EnableAlerts                                = false;
-                LongEntryAlert                              = "Alert2.wav";
-                ShortEntryAlert                             = "Alert2.wav";
+                AlertSoundsPath                             = DefaultAlertFilePath();
+                LongEntryAlert                              = "LongEntry.wav";
+                ShortEntryAlert                             = "ShortEntry.wav";
                 AddPlot(new Stroke(Brushes.White, 2), PlotStyle.Line, "LRSI");
                 AddPlot(Brushes.Transparent, "Signals");
                 _isRsiInitialized = false;
             }
             else if (State == State.Configure)
 			{
-                _lrsi = LaguerreRSI(LRSIType == LRSITypeEnum.LaguerreRSIWithFractalEnergy, Alpha, NFE, GLength, BetaDev, OverboughtLevel, OversoldLevel, OverboughtRegionBrush, OversoldRegionBrush, RegionOpacity, false, string.Empty, string.Empty, string.Empty, string.Empty);
+                _lrsi = LaguerreRSI(LRSIType == LRSITypeEnum.LaguerreRSIWithFractalEnergy, Alpha, NFE, GLength, BetaDev, OverboughtLevel, OversoldLevel, OverboughtRegionBrush, OversoldRegionBrush, RegionOpacity, false, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
                 _isRsiInitialized = false;
 
                 _longEntrySignalBrush = LongEntrySignalBrush.CloneCurrentValue();
@@ -150,12 +151,12 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             {
                 if (EnableLongEntrySignals && !string.IsNullOrWhiteSpace(LongEntryAlert) && LongEntrySignal[1])
                 {
-                    string audioFile = LongEntryAlert.Contains(@"\") ? LongEntryAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + LongEntryAlert);
+                    string audioFile = ResolveAlertFilePath(LongEntryAlert, AlertSoundsPath);
                     Alert("LongEntryAlert", Priority.High, string.Format("Enter LONG: Laguerre RSI leaving oversold region {0:0.#}", LRSI[1]), audioFile, 10, Brushes.Black, LongEntrySignalBrush);
                 }
                 if (EnableShortEntrySignals && !string.IsNullOrWhiteSpace(ShortEntryAlert) && ShortEntrySignal[1])
                 {
-                    string audioFile = ShortEntryAlert.Contains(@"\") ? ShortEntryAlert : (NinjaTrader.Core.Globals.InstallDir + @"\sounds\" + ShortEntryAlert);
+                    string audioFile = ResolveAlertFilePath(ShortEntryAlert, AlertSoundsPath);
                     Alert("ShortEntryAlert", Priority.High, string.Format("Enter SHORT: Laguerre RSI leaving overbought region {0:0.#}", LRSI[1]), audioFile, 10, Brushes.Black, ShortEntrySignalBrush);
                 }
             }
@@ -339,12 +340,17 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Long Entry Alert", Description = "Alert sound used for confirmed LONG entry signals.", Order = 2, GroupName = "Alerts")]
+        [Display(Name = "Alert Sounds Path", Description = "Location of alert audio files used for confirmed signals.", Order = 2, GroupName = "Alerts")]
+        public string AlertSoundsPath
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Long Entry Alert", Description = "Alert sound used for confirmed LONG entry signals.", Order = 3, GroupName = "Alerts")]
         public string LongEntryAlert
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Short Entry Alert", Description = "Alert sound used for confirmed SHORT entry signals.", Order = 3, GroupName = "Alerts")]
+        [Display(Name = "Short Entry Alert", Description = "Alert sound used for confirmed SHORT entry signals.", Order = 4, GroupName = "Alerts")]
         public string ShortEntryAlert
         { get; set; }
 
@@ -386,18 +392,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private gambcl.PaperFeet[] cachePaperFeet;
-		public gambcl.PaperFeet PaperFeet(NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public gambcl.PaperFeet PaperFeet(NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return PaperFeet(Input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, longEntryAlert, shortEntryAlert);
+			return PaperFeet(Input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 
-		public gambcl.PaperFeet PaperFeet(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public gambcl.PaperFeet PaperFeet(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
 			if (cachePaperFeet != null)
 				for (int idx = 0; idx < cachePaperFeet.Length; idx++)
-					if (cachePaperFeet[idx] != null && cachePaperFeet[idx].LRSIType == lRSIType && cachePaperFeet[idx].Alpha == alpha && cachePaperFeet[idx].NFE == nFE && cachePaperFeet[idx].GLength == gLength && cachePaperFeet[idx].BetaDev == betaDev && cachePaperFeet[idx].OverboughtLevel == overboughtLevel && cachePaperFeet[idx].OversoldLevel == oversoldLevel && cachePaperFeet[idx].OverboughtRegionBrush == overboughtRegionBrush && cachePaperFeet[idx].OversoldRegionBrush == oversoldRegionBrush && cachePaperFeet[idx].RegionOpacity == regionOpacity && cachePaperFeet[idx].EnableLongEntrySignals == enableLongEntrySignals && cachePaperFeet[idx].EnableShortEntrySignals == enableShortEntrySignals && cachePaperFeet[idx].LongEntrySignalBrush == longEntrySignalBrush && cachePaperFeet[idx].ShortEntrySignalBrush == shortEntrySignalBrush && cachePaperFeet[idx].SignalsOpacity == signalsOpacity && cachePaperFeet[idx].EnableAlerts == enableAlerts && cachePaperFeet[idx].LongEntryAlert == longEntryAlert && cachePaperFeet[idx].ShortEntryAlert == shortEntryAlert && cachePaperFeet[idx].EqualsInput(input))
+					if (cachePaperFeet[idx] != null && cachePaperFeet[idx].LRSIType == lRSIType && cachePaperFeet[idx].Alpha == alpha && cachePaperFeet[idx].NFE == nFE && cachePaperFeet[idx].GLength == gLength && cachePaperFeet[idx].BetaDev == betaDev && cachePaperFeet[idx].OverboughtLevel == overboughtLevel && cachePaperFeet[idx].OversoldLevel == oversoldLevel && cachePaperFeet[idx].OverboughtRegionBrush == overboughtRegionBrush && cachePaperFeet[idx].OversoldRegionBrush == oversoldRegionBrush && cachePaperFeet[idx].RegionOpacity == regionOpacity && cachePaperFeet[idx].EnableLongEntrySignals == enableLongEntrySignals && cachePaperFeet[idx].EnableShortEntrySignals == enableShortEntrySignals && cachePaperFeet[idx].LongEntrySignalBrush == longEntrySignalBrush && cachePaperFeet[idx].ShortEntrySignalBrush == shortEntrySignalBrush && cachePaperFeet[idx].SignalsOpacity == signalsOpacity && cachePaperFeet[idx].EnableAlerts == enableAlerts && cachePaperFeet[idx].AlertSoundsPath == alertSoundsPath && cachePaperFeet[idx].LongEntryAlert == longEntryAlert && cachePaperFeet[idx].ShortEntryAlert == shortEntryAlert && cachePaperFeet[idx].EqualsInput(input))
 						return cachePaperFeet[idx];
-			return CacheIndicator<gambcl.PaperFeet>(new gambcl.PaperFeet(){ LRSIType = lRSIType, Alpha = alpha, NFE = nFE, GLength = gLength, BetaDev = betaDev, OverboughtLevel = overboughtLevel, OversoldLevel = oversoldLevel, OverboughtRegionBrush = overboughtRegionBrush, OversoldRegionBrush = oversoldRegionBrush, RegionOpacity = regionOpacity, EnableLongEntrySignals = enableLongEntrySignals, EnableShortEntrySignals = enableShortEntrySignals, LongEntrySignalBrush = longEntrySignalBrush, ShortEntrySignalBrush = shortEntrySignalBrush, SignalsOpacity = signalsOpacity, EnableAlerts = enableAlerts, LongEntryAlert = longEntryAlert, ShortEntryAlert = shortEntryAlert }, input, ref cachePaperFeet);
+			return CacheIndicator<gambcl.PaperFeet>(new gambcl.PaperFeet(){ LRSIType = lRSIType, Alpha = alpha, NFE = nFE, GLength = gLength, BetaDev = betaDev, OverboughtLevel = overboughtLevel, OversoldLevel = oversoldLevel, OverboughtRegionBrush = overboughtRegionBrush, OversoldRegionBrush = oversoldRegionBrush, RegionOpacity = regionOpacity, EnableLongEntrySignals = enableLongEntrySignals, EnableShortEntrySignals = enableShortEntrySignals, LongEntrySignalBrush = longEntrySignalBrush, ShortEntrySignalBrush = shortEntrySignalBrush, SignalsOpacity = signalsOpacity, EnableAlerts = enableAlerts, AlertSoundsPath = alertSoundsPath, LongEntryAlert = longEntryAlert, ShortEntryAlert = shortEntryAlert }, input, ref cachePaperFeet);
 		}
 	}
 }
@@ -406,14 +412,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.gambcl.PaperFeet PaperFeet(NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public Indicators.gambcl.PaperFeet PaperFeet(NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return indicator.PaperFeet(Input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, longEntryAlert, shortEntryAlert);
+			return indicator.PaperFeet(Input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 
-		public Indicators.gambcl.PaperFeet PaperFeet(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public Indicators.gambcl.PaperFeet PaperFeet(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return indicator.PaperFeet(input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, longEntryAlert, shortEntryAlert);
+			return indicator.PaperFeet(input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 	}
 }
@@ -422,14 +428,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.gambcl.PaperFeet PaperFeet(NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public Indicators.gambcl.PaperFeet PaperFeet(NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return indicator.PaperFeet(Input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, longEntryAlert, shortEntryAlert);
+			return indicator.PaperFeet(Input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 
-		public Indicators.gambcl.PaperFeet PaperFeet(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string longEntryAlert, string shortEntryAlert)
+		public Indicators.gambcl.PaperFeet PaperFeet(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.PaperFeetEnums.LRSITypeEnum lRSIType, double alpha, int nFE, int gLength, int betaDev, double overboughtLevel, double oversoldLevel, Brush overboughtRegionBrush, Brush oversoldRegionBrush, int regionOpacity, bool enableLongEntrySignals, bool enableShortEntrySignals, Brush longEntrySignalBrush, Brush shortEntrySignalBrush, int signalsOpacity, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return indicator.PaperFeet(input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, longEntryAlert, shortEntryAlert);
+			return indicator.PaperFeet(input, lRSIType, alpha, nFE, gLength, betaDev, overboughtLevel, oversoldLevel, overboughtRegionBrush, oversoldRegionBrush, regionOpacity, enableLongEntrySignals, enableShortEntrySignals, longEntrySignalBrush, shortEntrySignalBrush, signalsOpacity, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 	}
 }

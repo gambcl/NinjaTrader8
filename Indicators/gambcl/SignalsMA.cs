@@ -54,6 +54,10 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 LongSignalBrush								= Brushes.Green;
                 ShortSignalBrush							= Brushes.Red;
                 SignalPrefix								= "SignalsMA_";
+                EnableAlerts                                = false;
+                AlertSoundsPath                             = DefaultAlertFilePath();
+                LongEntryAlert                              = "LongEntry.wav";
+                ShortEntryAlert                             = "ShortEntry.wav";
                 AddPlot(Brushes.White, "MovingAverage");
                 AddPlot(Brushes.Transparent, "Signals");
             }
@@ -116,6 +120,23 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
                 RemoveDrawObject(longEntrySignalTag);
                 RemoveDrawObject(shortEntrySignalTag);
             }
+
+            // Alerts
+            if (EnableAlerts && (State == State.Realtime) && IsFirstTickOfBar)
+            {
+                if (Signals[1] > 0 && !string.IsNullOrWhiteSpace(LongEntryAlert))
+                {
+                    // Long entry alert.
+                    string audioFile = ResolveAlertFilePath(LongEntryAlert, AlertSoundsPath);
+                    Alert("LongEntryAlert", Priority.High, "Long Entry", audioFile, 10, Brushes.Black, LongSignalBrush);
+                }
+                if (Signals[1] < 0 && !string.IsNullOrWhiteSpace(ShortEntryAlert))
+                {
+                    // Short entry alert.
+                    string audioFile = ResolveAlertFilePath(ShortEntryAlert, AlertSoundsPath);
+                    Alert("ShortEntryAlert", Priority.High, "Short Entry", audioFile, 10, Brushes.Black, ShortSignalBrush);
+                }
+            }
         }
         #endregion
 
@@ -173,6 +194,26 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
         public string SignalPrefix
         { get; set; }
 
+        [NinjaScriptProperty]
+        [Display(Name = "Enable Alerts", Description = "Trigger alerts for confirmed signals.", Order = 1, GroupName = "Alerts")]
+        public bool EnableAlerts
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Alert Sounds Path", Description = "Location of alert audio files used for confirmed signals.", Order = 2, GroupName = "Alerts")]
+        public string AlertSoundsPath
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Long Entry Alert", Description = "Alert sound used for confirmed LONG entry signals.", Order = 3, GroupName = "Alerts")]
+        public string LongEntryAlert
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Short Entry Alert", Description = "Alert sound used for confirmed SHORT entry signals.", Order = 4, GroupName = "Alerts")]
+        public string ShortEntryAlert
+        { get; set; }
+
         [Browsable(false)]
         [XmlIgnore]
         public Series<double> MovingAverage
@@ -212,18 +253,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private gambcl.SignalsMA[] cacheSignalsMA;
-		public gambcl.SignalsMA SignalsMA(NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public gambcl.SignalsMA SignalsMA(NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return SignalsMA(Input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
+			return SignalsMA(Input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 
-		public gambcl.SignalsMA SignalsMA(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public gambcl.SignalsMA SignalsMA(ISeries<double> input, NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
 			if (cacheSignalsMA != null)
 				for (int idx = 0; idx < cacheSignalsMA.Length; idx++)
-					if (cacheSignalsMA[idx] != null && cacheSignalsMA[idx].MAType == mAType && cacheSignalsMA[idx].Period == period && cacheSignalsMA[idx].SignalOffset == signalOffset && cacheSignalsMA[idx].UseSignalColors == useSignalColors && cacheSignalsMA[idx].LongSignalBrush == longSignalBrush && cacheSignalsMA[idx].ShortSignalBrush == shortSignalBrush && cacheSignalsMA[idx].SignalPrefix == signalPrefix && cacheSignalsMA[idx].EqualsInput(input))
+					if (cacheSignalsMA[idx] != null && cacheSignalsMA[idx].MAType == mAType && cacheSignalsMA[idx].Period == period && cacheSignalsMA[idx].SignalOffset == signalOffset && cacheSignalsMA[idx].UseSignalColors == useSignalColors && cacheSignalsMA[idx].LongSignalBrush == longSignalBrush && cacheSignalsMA[idx].ShortSignalBrush == shortSignalBrush && cacheSignalsMA[idx].SignalPrefix == signalPrefix && cacheSignalsMA[idx].EnableAlerts == enableAlerts && cacheSignalsMA[idx].AlertSoundsPath == alertSoundsPath && cacheSignalsMA[idx].LongEntryAlert == longEntryAlert && cacheSignalsMA[idx].ShortEntryAlert == shortEntryAlert && cacheSignalsMA[idx].EqualsInput(input))
 						return cacheSignalsMA[idx];
-			return CacheIndicator<gambcl.SignalsMA>(new gambcl.SignalsMA(){ MAType = mAType, Period = period, SignalOffset = signalOffset, UseSignalColors = useSignalColors, LongSignalBrush = longSignalBrush, ShortSignalBrush = shortSignalBrush, SignalPrefix = signalPrefix }, input, ref cacheSignalsMA);
+			return CacheIndicator<gambcl.SignalsMA>(new gambcl.SignalsMA(){ MAType = mAType, Period = period, SignalOffset = signalOffset, UseSignalColors = useSignalColors, LongSignalBrush = longSignalBrush, ShortSignalBrush = shortSignalBrush, SignalPrefix = signalPrefix, EnableAlerts = enableAlerts, AlertSoundsPath = alertSoundsPath, LongEntryAlert = longEntryAlert, ShortEntryAlert = shortEntryAlert }, input, ref cacheSignalsMA);
 		}
 	}
 }
@@ -232,14 +273,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.gambcl.SignalsMA SignalsMA(NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public Indicators.gambcl.SignalsMA SignalsMA(NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return indicator.SignalsMA(Input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
+			return indicator.SignalsMA(Input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 
-		public Indicators.gambcl.SignalsMA SignalsMA(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public Indicators.gambcl.SignalsMA SignalsMA(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return indicator.SignalsMA(input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
+			return indicator.SignalsMA(input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 	}
 }
@@ -248,14 +289,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.gambcl.SignalsMA SignalsMA(NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public Indicators.gambcl.SignalsMA SignalsMA(NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return indicator.SignalsMA(Input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
+			return indicator.SignalsMA(Input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 
-		public Indicators.gambcl.SignalsMA SignalsMA(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix)
+		public Indicators.gambcl.SignalsMA SignalsMA(ISeries<double> input , NinjaTrader.NinjaScript.Indicators.gambcl.SignalsMAEnums.MATypeEnum mAType, int period, int signalOffset, bool useSignalColors, Brush longSignalBrush, Brush shortSignalBrush, string signalPrefix, bool enableAlerts, string alertSoundsPath, string longEntryAlert, string shortEntryAlert)
 		{
-			return indicator.SignalsMA(input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix);
+			return indicator.SignalsMA(input, mAType, period, signalOffset, useSignalColors, longSignalBrush, shortSignalBrush, signalPrefix, enableAlerts, alertSoundsPath, longEntryAlert, shortEntryAlert);
 		}
 	}
 }

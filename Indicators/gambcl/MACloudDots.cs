@@ -49,7 +49,7 @@ namespace NinjaTrader.NinjaScript.Indicators.gambcl
             }
             else if (State == State.Configure)
 			{
-                _maCloud = MACloud(MAType, FastPeriod, SlowPeriod, Brushes.Transparent, Brushes.Transparent, 0, false, 0, string.Empty, false, string.Empty, string.Empty);
+                _maCloud = MACloud(MAType, FastPeriod, SlowPeriod, Brushes.Transparent, Brushes.Transparent, 0, false, 0, string.Empty, false, string.Empty, string.Empty, string.Empty);
 			}
 		}
 

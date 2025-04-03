@@ -2,6 +2,9 @@
 
 !.gitignore
 
+!AddOns
+!AddOns/*
+
 !Indicators
 Indicators/*
 !Indicators/gambcl
